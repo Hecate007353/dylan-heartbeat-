@@ -1872,7 +1872,14 @@ console.log("准备启动 Gateway...");
 console.log("PORT =", PORT);
 
 
-app.listen({ port: PORT, host: "0.0.0.0" }, (err, address) => {
+app.listen({ port: PORT, host: "0.0.0.0" })
+.then(address => {
+  console.log(`✅ Gateway 运行在 ${address}`);
+})
+.catch(err => {
+  console.error("启动失败:", err);
+  process.exit(1);
+});
   if (err) {
     console.error(err);
     process.exit(1);
