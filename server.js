@@ -238,11 +238,11 @@ if (lastMessage && lastMessage.role !== "system") {
     });
 
   if (error) {
-    console.error("Supabase 保存消息失败:", error.message);
+    console.error("Supabase 保存消息失败:", error?.message || error);
   }
 }
     if (error) {
-      console.error("Supabase 保存消息失败:", error.message);
+      console.error("Supabase 保存消息失败:", error?.message || error);
     }
 
   } catch (e) {
@@ -307,7 +307,7 @@ function saveTimestampDB(db) {
         fs.writeJsonSync(TIMESTAMP_DB_FILE, db, { spaces: 2 });
     } catch (error) {
         // 写入失败只会打印警告，不会让服务崩掉
-        console.warn(`⚠️ 写入 ${TIMESTAMP_DB_FILE} 失败，但不影响服务运行:`, error.message);
+        console.warn(`⚠️ 写入 ${TIMESTAMP_DB_FILE} 失败，但不影响服务运行：`, error?.message || error);
     }
 }
 
