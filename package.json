@@ -4,9 +4,9 @@
   "description": "A local Kelivo gateway that keeps timed chat context and lets your character send optional Bark wake-up messages.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "wake": "node wake_up.js",
-    "test": "node --test"
+  "start": "node server.js & node wake_up.js",
+  "test": "node --test"
+}
   },
   "keywords": [
     "fastify",
