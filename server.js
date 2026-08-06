@@ -237,7 +237,9 @@ console.log(
   final.map(m => m.role)
 );
 
-const lastMessage = final[final.length - 1];
+const lastMessage = [...final]
+  .reverse()
+  .find(m => m.role === "assistant");
 
 console.log(
   "LAST MESSAGE:",
