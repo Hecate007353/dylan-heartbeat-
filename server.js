@@ -274,7 +274,7 @@ async function saveTimeline(messages) {
  // 同步写入 Supabase
 try {
 
-const oldMessages = loadTimeline();
+const oldMessages = oldMessagesBeforeSave;
 
 const previous = oldMessages.filter(
 m => m.role === "user" || m.role === "assistant"
