@@ -290,14 +290,17 @@ const newMessages = current.slice(previous.length);
 
 if (newMessages.length > 0) {
 
-const rows = newMessages.map(msg => ({
-role: msg.role,
-content: normalizeContentToText(msg.content)
-}));
+const userMsg = newMessages.find(m => m.role === "user");
+const assistantMsg = newMessages.find(m => m.role === "assistant");
 
-const { error } = await supabase
-.from("message")
-.insert(rows);
+if (userMsg && assistantMsg) {
+  await saveChatPair(
+    userMsg.content,
+    assistantMsg.content
+  );
+}
+
+}
 
 
 if (error) {
