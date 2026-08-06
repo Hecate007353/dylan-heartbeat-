@@ -218,6 +218,10 @@ function loadTimeline() {
 // 保存 timeline（保留 SP）
 // ========================
 async function saveTimeline(messages) {
+  console.log(
+  "SAVE TIMELINE ROLES:",
+  messages.map(m => m.role)
+);
   const sp = messages.find(m => m.role === "system");
   const nonSP = messages.filter(m => m.role !== "system");
   const trimmed = nonSP.slice(-49);
