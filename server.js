@@ -669,53 +669,8 @@ app.post("/v1/chat/completions", async (req, reply) => {
 
     const finalTimeline = buildTimeline(kelivoMessages, tsDB);
 
-
-// ========================
-// 保存新增聊天到 Supabase
-// ========================
-try {
-
-const newRealMessages = finalTimeline.filter(
-m => m.role === "user" || m.role === "assistant"
-);
-
-
-const addedMessages = newRealMessages.slice(
-oldRealMessages.length
-);
-
-
-if (addedMessages.length > 0) {
-
-const rows = addedMessages.map(m => ({
-role: m.role,
-content: normalizeContentToText(m.content)
-}));
-
-
-const { error } = await supabase
-.from("message")
-.insert(rows);
-
-
-if(error){
-console.error(
-"Supabase 保存失败:",
-error.message
-);
-}
-
-}
-
-
-}catch(e){
-
-console.error(
-"Supabase 写入异常:",
-e.message
-);
-
-}
+const finalTimeline = buildTimeline(kelivoMessages, tsDB);
+saveTimeline(finalTimeline);
 
 
 // 最后才保存 timeline
