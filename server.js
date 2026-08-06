@@ -11,6 +11,47 @@ const {
 
 const supabase = require("./supabase");
 
+// ========================
+// 保存一轮聊天到 Supabase
+// ========================
+
+async function saveChatPair(userContent, assistantContent) {
+  try {
+
+    const rows = [
+      {
+        role: "user",
+        content: normalizeContentToText(userContent)
+      },
+      {
+        role: "assistant",
+        content: normalizeContentToText(assistantContent)
+      }
+    ];
+
+    const { error } = await supabase
+      .from("message")
+      .insert(rows);
+
+    if (error) {
+      console.error(
+        "Supabase 保存聊天失败:",
+        error.message
+      );
+    } else {
+      console.log(
+        "✅ Supabase 保存一轮聊天"
+      );
+    }
+
+  } catch (e) {
+    console.error(
+      "Supabase 写入异常:",
+      e.message
+    );
+  }
+}
+
 const DEFAULT_BODY_LIMIT_MB = 50;
 
 function readBodyLimitBytes() {
