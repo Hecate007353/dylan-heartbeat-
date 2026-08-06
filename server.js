@@ -240,6 +240,7 @@ if (lastMessage && lastMessage.role !== "system") {
     if (error) {
       console.error("Supabase 保存消息失败:", error?.message || error);
     }
+  }
 
   } catch (e) {
     console.error("Supabase 写入异常:", e.message);
