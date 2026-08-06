@@ -229,40 +229,54 @@ async function saveTimeline(messages) {
 
   fs.writeJsonSync(TIMELINE_FILE, final, { spaces: 2 });
 
-  // 同步写入 Supabase
- try {
+ // 同步写入 Supabase
+try {
 
-console.log(
-  "FINAL ROLES:",
-  final.map(m => m.role)
+const oldMessages = loadTimeline();
+
+const previous = oldMessages.filter(
+m => m.role === "user" || m.role === "assistant"
 );
 
-const lastMessage = [...final]
-  .reverse()
-  .find(m => m.role === "assistant");
-
-console.log(
-  "LAST MESSAGE:",
-  lastMessage
+const current = final.filter(
+m => m.role === "user" || m.role === "assistant"
 );
-   
-if (lastMessage && lastMessage.role !== "system") {
-  const { error } = await supabase
-    .from("message")
-    .insert({
-      role: lastMessage.role,
-      content: normalizeContentToText(lastMessage.content)
-    });
 
-    if (error) {
-      console.error("Supabase 保存消息失败:", error?.message || error);
-    }
-  }
 
-  } catch (e) {
-    console.error("Supabase 写入异常:", e.message);
-  }
+// 找出新增加的消息
+const newMessages = current.slice(previous.length);
 
+
+if (newMessages.length > 0) {
+
+const rows = newMessages.map(msg => ({
+role: msg.role,
+content: normalizeContentToText(msg.content)
+}));
+
+const { error } = await supabase
+.from("message")
+.insert(rows);
+
+
+if (error) {
+console.error(
+"Supabase 保存消息失败:",
+error.message || error
+);
+}
+
+}
+
+
+} catch(e){
+
+console.error(
+"Supabase 写入异常:",
+e.message
+);
+
+}
   // 保存时间戳到单独的数据库
   try {
     let tsDB = {};
