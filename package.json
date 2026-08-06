@@ -6,7 +6,6 @@
   "scripts": {
   "start": "node server.js & node wake_up.js",
   "test": "node --test"
-}
   },
   "keywords": [
     "fastify",
