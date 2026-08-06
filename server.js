@@ -332,52 +332,7 @@ async function saveTimeline(messages) {
   }
 
 
-  // 保存时间戳
-  try {
-
-    let tsDB = {};
-
-    if (fs.existsSync(TIMESTAMP_DB_FILE)) {
-      tsDB = fs.readJsonSync(TIMESTAMP_DB_FILE);
-    }
-
-
-    const lastUserMsg =
-      [...messages]
-      .reverse()
-      .find(m => m.role === "user");
-
-
-    if(lastUserMsg){
-
-      const key =
-        new Date().toISOString();
-
-
-      tsDB[key] = {
-        role:lastUserMsg.role,
-        content:lastUserMsg.content,
-        timestamp:key
-      };
-
-
-      fs.writeJsonSync(
-        TIMESTAMP_DB_FILE,
-        tsDB,
-        {spaces:2}
-      );
-
-    }
-
-
-  } catch(e){
-
-    console.error(
-      "保存时间戳失败:",
-      e.message
-    );
-
-  }
+  
 
   // 保存时间戳到单独的数据库
   try {
