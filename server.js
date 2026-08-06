@@ -237,10 +237,6 @@ if (lastMessage && lastMessage.role !== "system") {
       content: normalizeContentToText(lastMessage.content)
     });
 
-  if (error) {
-    console.error("Supabase 保存消息失败:", error?.message || error);
-  }
-}
     if (error) {
       console.error("Supabase 保存消息失败:", error?.message || error);
     }
