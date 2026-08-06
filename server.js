@@ -379,14 +379,6 @@ async function saveTimeline(messages) {
 
   }
 
-} catch(e){
-
-console.error(
-"Supabase 写入异常:",
-e.message
-);
-
-}
   // 保存时间戳到单独的数据库
   try {
     let tsDB = {};
