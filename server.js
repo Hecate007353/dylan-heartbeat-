@@ -259,54 +259,125 @@ function loadTimeline() {
 // 保存 timeline（保留 SP）
 // ========================
 async function saveTimeline(messages) {
-  console.log(
-  "SAVE TIMELINE ROLES:",
-  messages.map(m => m.role)
-);
-  const sp = messages.find(m => m.role === "system");
+
   const oldMessagesBeforeSave = loadTimeline();
-  const nonSP = messages.filter(m => m.role !== "system");
-  const trimmed = nonSP.slice(-49);
-  const final = sp ? [sp, ...trimmed] : trimmed;
 
-  fs.writeJsonSync(TIMELINE_FILE, final, { spaces: 2 });
+  try {
 
- // 同步写入 Supabase
-try {
+    console.log(
+      "SAVE TIMELINE ROLES:",
+      messages.map(m => m.role)
+    );
 
-const oldMessages = oldMessagesBeforeSave;
+    const sp = messages.find(m => m.role === "system");
+    const nonSP = messages.filter(m => m.role !== "system");
 
-const previous = oldMessages.filter(
-m => m.role === "user" || m.role === "assistant"
-);
+    const trimmed = nonSP.slice(-49);
+    const final = sp ? [sp, ...trimmed] : trimmed;
 
-const current = final.filter(
-m => m.role === "user" || m.role === "assistant"
-);
+    const previous = oldMessagesBeforeSave.filter(
+      m => m.role === "user" || m.role === "assistant"
+    );
 
-
-// 找出新增加的消息
-const newMessages = current.slice(previous.length);
-
-
-if (newMessages.length > 0) {
-
-const userMsg = newMessages.find(m => m.role === "user");
-const assistantMsg = newMessages.find(m => m.role === "assistant");
-
-if (userMsg && assistantMsg) {
-  await saveChatPair(
-    userMsg.content,
-    assistantMsg.content
-  );
-}
-
-}
+    const current = final.filter(
+      m => m.role === "user" || m.role === "assistant"
+    );
 
 
+    const newMessages = current.slice(previous.length);
 
-}
 
+    if (newMessages.length > 0) {
+
+      const userMsg = newMessages.find(
+        m => m.role === "user"
+      );
+
+      const assistantMsg = newMessages.find(
+        m => m.role === "assistant"
+      );
+
+
+      if (userMsg && assistantMsg) {
+
+        await saveChatPair(
+          userMsg.content,
+          assistantMsg.content
+        );
+
+      }
+
+    }
+
+
+    fs.writeJsonSync(
+      TIMELINE_FILE,
+      final,
+      { spaces: 2 }
+    );
+
+
+    console.log(
+      "✅ timeline 保存完成"
+    );
+
+
+  } catch(e){
+
+    console.error(
+      "保存 timeline 失败:",
+      e.message
+    );
+
+  }
+
+
+  // 保存时间戳
+  try {
+
+    let tsDB = {};
+
+    if (fs.existsSync(TIMESTAMP_DB_FILE)) {
+      tsDB = fs.readJsonSync(TIMESTAMP_DB_FILE);
+    }
+
+
+    const lastUserMsg =
+      [...messages]
+      .reverse()
+      .find(m => m.role === "user");
+
+
+    if(lastUserMsg){
+
+      const key =
+        new Date().toISOString();
+
+
+      tsDB[key] = {
+        role:lastUserMsg.role,
+        content:lastUserMsg.content,
+        timestamp:key
+      };
+
+
+      fs.writeJsonSync(
+        TIMESTAMP_DB_FILE,
+        tsDB,
+        {spaces:2}
+      );
+
+    }
+
+
+  } catch(e){
+
+    console.error(
+      "保存时间戳失败:",
+      e.message
+    );
+
+  }
 
 } catch(e){
 
