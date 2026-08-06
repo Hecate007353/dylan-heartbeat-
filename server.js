@@ -651,6 +651,9 @@ app.post("/v1/chat/completions", async (req, reply) => {
     const oldTimeline = loadTimeline();
 
     const tsDB = loadTimestampDB();
+    const oldRealMessages = oldTimeline.filter(
+    m => m.role === "user" || m.role === "assistant"
+    );
     let tsDBDirty = false;
     for (const msg of kelivoMessages) {
       if (msg.role === "system") continue;
