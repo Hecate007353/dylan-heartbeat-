@@ -264,6 +264,7 @@ async function saveTimeline(messages) {
   messages.map(m => m.role)
 );
   const sp = messages.find(m => m.role === "system");
+  const oldMessagesBeforeSave = loadTimeline();
   const nonSP = messages.filter(m => m.role !== "system");
   const trimmed = nonSP.slice(-49);
   const final = sp ? [sp, ...trimmed] : trimmed;
