@@ -708,7 +708,6 @@ app.post("/v1/chat/completions", async (req, reply) => {
     const finalTimeline = buildTimeline(kelivoMessages, tsDB);
 
 const finalTimeline = buildTimeline(kelivoMessages, tsDB);
-saveTimeline(finalTimeline);
 
 
 // 最后才保存 timeline
