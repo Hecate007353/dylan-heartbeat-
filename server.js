@@ -303,12 +303,6 @@ if (userMsg && assistantMsg) {
 }
 
 
-if (error) {
-console.error(
-"Supabase 保存消息失败:",
-error.message || error
-);
-}
 
 }
 
