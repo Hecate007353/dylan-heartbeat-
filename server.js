@@ -230,9 +230,20 @@ async function saveTimeline(messages) {
   fs.writeJsonSync(TIMELINE_FILE, final, { spaces: 2 });
 
   // 同步写入 Supabase
-  try {
+ try {
+
+console.log(
+  "FINAL ROLES:",
+  final.map(m => m.role)
+);
+
 const lastMessage = final[final.length - 1];
 
+console.log(
+  "LAST MESSAGE:",
+  lastMessage
+);
+   
 if (lastMessage && lastMessage.role !== "system") {
   const { error } = await supabase
     .from("message")
