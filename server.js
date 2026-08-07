@@ -705,6 +705,15 @@ app.post("/v1/chat/completions", async (req, reply) => {
     }));
 
     const kelivoMessages = body.messages || [];
+    console.log(
+  kelivoMessages
+    .filter(m => m.role === "user" || m.role === "assistant")
+    .slice(-6)
+    .map(m => ({
+      role:m.role,
+      content:String(m.content).slice(0,50)
+    }))
+);
     const oldTimeline = loadTimeline();
 
     const tsDB = loadTimestampDB();
