@@ -1898,9 +1898,3 @@ app.listen({ port: PORT, host: "0.0.0.0" })
   console.error("启动失败:", err);
   process.exit(1);
 });
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  console.log(`✅ Gateway 运行在 ${address}`);
-});
