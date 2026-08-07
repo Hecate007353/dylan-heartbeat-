@@ -1769,57 +1769,141 @@ app.post("/admin/save", { preHandler: basicAuth }, async (req, reply) => {
     } = req.body || {};
 
     if (!target_url || !model_name) {
-      return reply.code(400).send({ error: "target_url / model_name 必填" });
+      return reply.code(400).send({
+        error: "target_url / model_name 必填"
+      });
     }
 
-    const finalTargetKey = target_key || readEnvValue("TARGET_API_KEY");
-    const finalGatewayKey = gateway_api_key || readEnvValue("GATEWAY_API_KEY");
-    const finalBarkKey = bark_key || readEnvValue("BARK_KEY");
+    const finalTargetKey =
+      target_key || readEnvValue("TARGET_API_KEY");
 
-    // 批注 2026-06-26：公开版把唤醒策略和天气信息开放到管理页；保存时做轻量校验，避免空值把运行中的唤醒节奏写坏。
-    // 批注 2026-07-15：GATEWAY_API_KEY 是公开 /v1 的客户端鉴权 key，不能和上游 TARGET_API_KEY 混在一起展示或返回。
+    const finalGatewayKey =
+      gateway_api_key || readEnvValue("GATEWAY_API_KEY");
+
+    const finalBarkKey =
+      bark_key || readEnvValue("BARK_KEY");
+
+
     writeEnvUpdates({
       TARGET_API_URL: target_url,
       TARGET_API_KEY: finalTargetKey,
       GATEWAY_API_KEY: finalGatewayKey,
       MODEL_NAME: model_name,
+
       BARK_KEY: finalBarkKey,
       CUSTOM_ICON_URL: custom_icon || "",
-      DAY_WAKE_AFTER_MINUTES: normalizePositiveInteger(day_wake_after, "DAY_WAKE_AFTER_MINUTES", "60"),
-      NIGHT_WAKE_AFTER_MINUTES: normalizePositiveInteger(night_wake_after, "NIGHT_WAKE_AFTER_MINUTES", "120"),
-      DAY_CHECK_INTERVAL_MINUTES: normalizePositiveInteger(day_check_interval, "DAY_CHECK_INTERVAL_MINUTES", "10"),
-      NIGHT_CHECK_INTERVAL_MINUTES: normalizePositiveInteger(night_check_interval, "NIGHT_CHECK_INTERVAL_MINUTES", "120"),
-      WAKE_DAY_START_HOUR: normalizeHour(wake_day_start_hour, "WAKE_DAY_START_HOUR", "10", 0, 23),
-      WAKE_DAY_END_HOUR: normalizeHour(wake_day_end_hour, "WAKE_DAY_END_HOUR", "24", 1, 24),
-      WEATHER_ENABLED: normalizeBooleanString(weather_enabled, "WEATHER_ENABLED", "false"),
-      WEATHER_LOCATION_NAME: weather_location_name || "",
-      WEATHER_LAT: weather_lat || "",
-      WEATHER_LON: weather_lon || "",
-      WEATHER_UNITS: normalizeWeatherUnits(weather_units),
-      ADMIN_USER: readEnvValue("ADMIN_USER"),
-      ADMIN_PASSWORD: readEnvValue("ADMIN_PASSWORD")
+
+      DAY_WAKE_AFTER_MINUTES:
+        normalizePositiveInteger(
+          day_wake_after,
+          "DAY_WAKE_AFTER_MINUTES",
+          "60"
+        ),
+
+      NIGHT_WAKE_AFTER_MINUTES:
+        normalizePositiveInteger(
+          night_wake_after,
+          "NIGHT_WAKE_AFTER_MINUTES",
+          "120"
+        ),
+
+      DAY_CHECK_INTERVAL_MINUTES:
+        normalizePositiveInteger(
+          day_check_interval,
+          "DAY_CHECK_INTERVAL_MINUTES",
+          "10"
+        ),
+
+      NIGHT_CHECK_INTERVAL_MINUTES:
+        normalizePositiveInteger(
+          night_check_interval,
+          "NIGHT_CHECK_INTERVAL_MINUTES",
+          "120"
+        ),
+
+      WAKE_DAY_START_HOUR:
+        normalizeHour(
+          wake_day_start_hour,
+          "WAKE_DAY_START_HOUR",
+          "10",
+          0,
+          23
+        ),
+
+      WAKE_DAY_END_HOUR:
+        normalizeHour(
+          wake_day_end_hour,
+          "WAKE_DAY_END_HOUR",
+          "24",
+          1,
+          24
+        ),
+
+      WEATHER_ENABLED:
+        normalizeBooleanString(
+          weather_enabled,
+          "WEATHER_ENABLED",
+          "false"
+        ),
+
+      WEATHER_LOCATION_NAME:
+        weather_location_name || "",
+
+      WEATHER_LAT:
+        weather_lat || "",
+
+      WEATHER_LON:
+        weather_lon || "",
+
+      WEATHER_UNITS:
+        normalizeWeatherUnits(weather_units),
+
+      ADMIN_USER:
+        readEnvValue("ADMIN_USER"),
+
+      ADMIN_PASSWORD:
+        readEnvValue("ADMIN_PASSWORD")
     });
+
+
     console.log("\n✅ .env 已更新，可通过管理页重启服务\n");
 
-if (wantsJsonResponse(req)) {
-  return reply.send({ success: true });
-}
 
-return reply.type("text/html").send(`
+    if (wantsJsonResponse(req)) {
+      return reply.send({
+        success: true
+      });
+    }
+
+
+    return reply.type("text/html").send(`
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>保存成功</title>
 </head>
+
 <body>
+
 <script>
 alert("配置保存成功，请重启服务生效");
 window.location.href="/admin";
 </script>
+
 </body>
 </html>
 `);
+
+  } catch (err) {
+
+    console.error("保存配置失败:", err);
+
+    return reply.code(500).send({
+      error: err.message
+    });
+
+  }
 });
 
 
@@ -1827,6 +1911,7 @@ window.location.href="/admin";
 // 保存预设方案
 // ========================
 app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) => {
+
   const {
     name,
     target_url,
@@ -1834,17 +1919,24 @@ app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) =>
     model_name
   } = req.body || {};
 
+
   if (!name || !target_url || !model_name) {
+
     return reply.code(400).send({
       error: "name / target_url / model_name 必填"
     });
+
   }
+
 
   const presets = loadPresets();
 
-  const existing = presets.findIndex(
-    p => p.name === name
-  );
+
+  const existing =
+    presets.findIndex(
+      p => p.name === name
+    );
+
 
   const entry = {
     name,
@@ -1853,17 +1945,25 @@ app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) =>
     model_name
   };
 
+
   if (existing >= 0) {
+
     presets[existing] = entry;
+
   } else {
+
     presets.push(entry);
+
   }
 
+
   savePresets(presets);
+
 
   reply.send({
     success: true
   });
+
 });
 
 
@@ -1871,18 +1971,26 @@ app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) =>
 // 删除预设方案
 // ========================
 app.post("/admin/presets/delete", { preHandler: basicAuth }, async (req, reply) => {
+
   const {
     name
   } = req.body || {};
 
-  const presets = loadPresets()
-    .filter(p => p.name !== name);
+
+  const presets =
+    loadPresets()
+      .filter(
+        p => p.name !== name
+      );
+
 
   savePresets(presets);
+
 
   reply.send({
     success: true
   });
+
 });
 // ========================
 // 心跳接口
