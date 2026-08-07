@@ -1801,11 +1801,25 @@ app.post("/admin/save", { preHandler: basicAuth }, async (req, reply) => {
     });
     console.log("\n✅ .env 已更新，可通过管理页重启服务\n");
 
-    if (wantsJsonResponse(req)) {
-      return reply.send({ success: true });
-    }
+   if (wantsJsonResponse(req)) {
+  return reply.send({ success: true });
+}
 
-    reply.type("text/html").send(`<!DOCTYPE html>
+return reply.type("text/html").send(`
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>配置保存</title>
+</head>
+<body>
+<script>
+alert("配置保存成功，请重启服务生效");
+window.location.href="/admin";
+</script>
+</body>
+</html>
+`);
 <html lang="zh">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>已保存</title></head>
 <body style="text-align:center;font-family:-apple-system,sans-serif;padding:40px;">
