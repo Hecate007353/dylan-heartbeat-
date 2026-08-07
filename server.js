@@ -1805,12 +1805,16 @@ app.post("/admin/save", { preHandler: basicAuth }, async (req, reply) => {
   return reply.send({ success: true });
 }
 
+if (wantsJsonResponse(req)) {
+  return reply.send({ success: true });
+}
+
 return reply.type("text/html").send(`
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>配置保存</title>
+<title>保存成功</title>
 </head>
 <body>
 <script>
@@ -1820,17 +1824,6 @@ window.location.href="/admin";
 </body>
 </html>
 `);
-<html lang="zh">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>已保存</title></head>
-<body style="text-align:center;font-family:-apple-system,sans-serif;padding:40px;">
-  <h2>✅ 配置已保存</h2>
-  <p>现在可以返回管理页，点击重启按钮让新配置生效。</p>
-  <a href="/admin">← 返回设置</a>
-</body></html>`);
-  } catch (err) {
-    console.error(err);
-    reply.code(500).send({ error: err.message });
-  }
 });
 
 // ========================
