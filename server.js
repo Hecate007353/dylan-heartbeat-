@@ -1801,10 +1801,7 @@ app.post("/admin/save", { preHandler: basicAuth }, async (req, reply) => {
     });
     console.log("\n✅ .env 已更新，可通过管理页重启服务\n");
 
-   if (wantsJsonResponse(req)) {
-  return reply.send({ success: true });
-}
-
+  
 if (wantsJsonResponse(req)) {
   return reply.send({ success: true });
 }
