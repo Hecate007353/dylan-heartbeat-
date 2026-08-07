@@ -1801,7 +1801,6 @@ app.post("/admin/save", { preHandler: basicAuth }, async (req, reply) => {
     });
     console.log("\n✅ .env 已更新，可通过管理页重启服务\n");
 
-  
 if (wantsJsonResponse(req)) {
   return reply.send({ success: true });
 }
@@ -1828,16 +1827,37 @@ window.location.href="/admin";
 // ========================
 app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) => {
   const { name, target_url, target_key, model_name } = req.body || {};
+
   if (!name || !target_url || !model_name) {
-    return reply.code(400).send({ error: "name / target_url / model_name 必填" });
+    return reply.code(400).send({
+      error: "name / target_url / model_name 必填"
+    });
   }
+
   const presets = loadPresets();
-  const existing = presets.findIndex(p => p.name === name);
-  const entry = { name, target_url, target_key: target_key || "", model_name };
-  if (existing >= 0) presets[existing] = entry;
-  else presets.push(entry);
+
+  const existing = presets.findIndex(
+    p => p.name === name
+  );
+
+  const entry = {
+    name,
+    target_url,
+    target_key: target_key || "",
+    model_name
+  };
+
+  if (existing >= 0) {
+    presets[existing] = entry;
+  } else {
+    presets.push(entry);
+  }
+
   savePresets(presets);
-  reply.send({ success: true });
+
+  reply.send({
+    success: true
+  });
 });
 
 // ========================
@@ -1845,11 +1865,16 @@ app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) =>
 // ========================
 app.post("/admin/presets/delete", { preHandler: basicAuth }, async (req, reply) => {
   const { name } = req.body || {};
-  const presets = loadPresets().filter(p => p.name !== name);
-  savePresets(presets);
-  reply.send({ success: true });
-});
 
+  const presets = loadPresets()
+    .filter(p => p.name !== name);
+
+  savePresets(presets);
+
+  reply.send({
+    success: true
+  });
+});
 // ========================
 // 心跳接口
 // ========================
