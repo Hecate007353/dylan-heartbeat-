@@ -1822,11 +1822,17 @@ window.location.href="/admin";
 `);
 });
 
+
 // ========================
 // 保存预设方案
 // ========================
 app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) => {
-  const { name, target_url, target_key, model_name } = req.body || {};
+  const {
+    name,
+    target_url,
+    target_key,
+    model_name
+  } = req.body || {};
 
   if (!name || !target_url || !model_name) {
     return reply.code(400).send({
@@ -1860,11 +1866,14 @@ app.post("/admin/presets/save", { preHandler: basicAuth }, async (req, reply) =>
   });
 });
 
+
 // ========================
 // 删除预设方案
 // ========================
 app.post("/admin/presets/delete", { preHandler: basicAuth }, async (req, reply) => {
-  const { name } = req.body || {};
+  const {
+    name
+  } = req.body || {};
 
   const presets = loadPresets()
     .filter(p => p.name !== name);
