@@ -83,7 +83,8 @@ return data;
 
 module.exports={
 addMemory,
-getMemories
+getMemories,
+analyzeMemory
 };
 
 
