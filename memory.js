@@ -85,3 +85,126 @@ module.exports={
 addMemory,
 getMemories
 };
+
+
+async function analyzeMemory(messages){
+
+const prompt = `
+你是Erebus的长期记忆管理模块。
+
+你的任务：
+判断下面聊天内容是否值得保存为长期记忆。
+
+只保存：
+
+1. 用户长期偏好
+例如：
+- 喜欢什么
+- 讨厌什么
+- 习惯
+
+2. 用户身份信息
+例如：
+- 名字
+- 工作
+- 长期状态
+
+3. 用户长期目标
+
+4. 用户与Erebus之间的重要关系设定
+
+5. Erebus自身长期设定
+
+
+不要保存：
+
+- 普通闲聊
+- 一次性事件
+- 今天发生的小事
+- 临时情绪
+
+
+如果需要保存，输出：
+
+{
+"save":true,
+"content":"简短记忆内容",
+"category":"分类",
+"importance":1-10
+}
+
+
+如果不需要：
+
+{
+"save":false
+}
+
+
+只输出JSON。
+
+
+聊天内容：
+
+${JSON.stringify(messages)}
+`;
+
+
+try{
+
+
+const response = await fetch(
+TARGET_API_URL,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":
+`Bearer ${TARGET_API_KEY}`
+},
+body:JSON.stringify({
+
+model:MODEL_NAME,
+
+messages:[
+{
+role:"system",
+content:prompt
+}
+],
+
+temperature:0.2
+
+})
+}
+);
+
+
+const result = await response.json();
+
+
+const text =
+result.choices[0].message.content;
+
+
+const memory =
+JSON.parse(text);
+
+
+return memory;
+
+
+}catch(error){
+
+console.error(
+"memory analyze error:",
+error
+);
+
+return {
+save:false
+};
+
+}
+
+}
