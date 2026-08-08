@@ -1,26 +1,29 @@
-const OpenAI = require("openai");
-
-
-const client = new OpenAI({
-apiKey:process.env.TARGET_API_KEY
-});
-
-
 async function createEmbedding(text){
 
+const response = await fetch(
+process.env.EMBEDDING_URL,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:
+`Bearer ${process.env.TARGET_API_KEY}`
+},
+body:JSON.stringify({
 
-const response =
-await client.embeddings.create({
-
-model:"text-embedding-3-small",
+model:
+process.env.EMBEDDING_MODEL,
 
 input:text
 
+})
 });
 
 
-return response.data[0].embedding;
+const data=await response.json();
 
+
+return data.data[0].embedding;
 
 }
 
