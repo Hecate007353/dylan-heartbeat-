@@ -307,13 +307,22 @@ const newMessages = current.filter(m => {
 
     if (newMessages.length > 0) {
 
-      const userMsg = newMessages.find(
-        m => m.role === "user"
-      );
+      const userMsgs = newMessages.filter(
+  m => m.role === "user"
+);
 
-      const assistantMsg = newMessages.find(
-        m => m.role === "assistant"
-      );
+const assistantMsgs = newMessages.filter(
+  m => m.role === "assistant"
+);
+
+if (userMsgs.length && assistantMsgs.length) {
+
+  await saveChatPair(
+    userMsgs[userMsgs.length - 1].content,
+    assistantMsgs[assistantMsgs.length - 1].content
+  );
+
+}
 
 
       if (userMsg && assistantMsg) {
