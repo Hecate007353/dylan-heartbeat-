@@ -1,69 +1,81 @@
-const { createClient } = require("@supabase/supabase-js");
-
-
-const supabase = createClient(
- process.env.SUPABASE_URL,
- process.env.SUPABASE_KEY
-);
+const supabase = require("./supabase");
 
 
 
 async function addMemory(memory){
 
- const {
-  content,
-  category,
-  importance
- } = memory;
+const {
+content,
+category="general",
+importance=5
+}=memory;
 
 
- const {error}=await supabase
- .from("erebus_memory")
- .insert({
-   content,
-   category,
-   importance
- });
+const {data,error}=await supabase
+.from("erebus_memory")
+.insert({
+content,
+category,
+importance
+})
+.select();
 
 
- if(error){
-   console.error(
-    "memory save error",
-    error
-   );
- }
+if(error){
+console.error(
+"memory save error",
+error
+);
+return null;
+}
+
+
+return data[0];
 
 }
+
 
 
 
 async function getMemories(limit=20){
 
- const {data,error}=await supabase
- .from("erebus_memory")
- .select("*")
- .order(
-  "importance",
-  {
-   ascending:false
-  }
- )
- .limit(limit);
+
+const {data,error}=await supabase
+.from("erebus_memory")
+.select("*")
+.order(
+"importance",
+{
+ascending:false
+}
+)
+.order(
+"updated_at",
+{
+ascending:false
+}
+)
+.limit(limit);
 
 
- if(error){
-  console.error(error);
-  return [];
- }
+
+if(error){
+
+console.error(error);
+
+return [];
+
+}
 
 
- return data;
+return data;
 
 }
 
 
 
+
 module.exports={
- addMemory,
- getMemories
+addMemory,
+getMemories
 };
