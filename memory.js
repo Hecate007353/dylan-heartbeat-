@@ -185,8 +185,14 @@ const text =
 result.choices[0].message.content;
 
 
-const memory =
-JSON.parse(text);
+let clean=text
+.replace(/```json/g,"")
+.replace(/```/g,"")
+.trim();
+
+
+const memory=
+JSON.parse(clean);
 
 
 return memory;
