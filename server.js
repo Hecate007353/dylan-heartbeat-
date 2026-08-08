@@ -2099,49 +2099,6 @@ app.get("/test-bark", async (req, reply) => {
   reply.send({ success: true });
 });
 
-// ========================
-// Memory 测试接口
-// ========================
-app.get("/test-memory", async (req, reply) => {
-
-  try {
-
-    const testMemory = {
-      content: "Erebus memory test: 用户喜欢测试新功能",
-      category: "test",
-      importance: 10
-    };
-
-
-    await addMemory(testMemory);
-
-
-    const memories = await getMemories(10);
-
-
-    reply.send({
-      success:true,
-      saved:testMemory,
-      current:memories
-    });
-
-
-  } catch(error){
-
-    console.error(
-      "memory test failed:",
-      error
-    );
-
-
-    reply.code(500).send({
-      success:false,
-      error:error.message
-    });
-
-  }
-
-});
 
 // ========================
 // 启动服务
