@@ -79,15 +79,6 @@ return data;
 }
 
 
-
-
-module.exports={
-addMemory,
-getMemories,
-analyzeMemory
-};
-
-
 async function analyzeMemory(messages){
 
 const prompt = `
@@ -209,3 +200,8 @@ save:false
 }
 
 }
+module.exports={
+addMemory,
+getMemories,
+analyzeMemory
+};
