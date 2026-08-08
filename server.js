@@ -782,15 +782,18 @@ saveTimeline(finalTimeline);
       .filter(Boolean);
 
    // Erebus memory 自动分析
-try {
+const memoryMessages =
+llmMessages;
+
 
 console.log(
 "发送给Erebus memory分析:",
 JSON.stringify(memoryMessages,null,2)
 );
- 
+
+
 const memoryResult =
-await analyzeMemory(llmMessages);
+await analyzeMemory(memoryMessages);
 
 
 if(memoryResult && memoryResult.save){
