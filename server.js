@@ -284,8 +284,26 @@ async function saveTimeline(messages) {
     );
 
 
-    const newMessages = current.slice(previous.length);
+   const previousKeys = new Set(
+  previous.map(m =>
+    JSON.stringify({
+      role: m.role,
+      content: normalizeContentToText(m.content)
+    })
+  )
+);
 
+
+const newMessages = current.filter(m => {
+
+  const key = JSON.stringify({
+    role: m.role,
+    content: normalizeContentToText(m.content)
+  });
+
+  return !previousKeys.has(key);
+
+});
 
     if (newMessages.length > 0) {
 
