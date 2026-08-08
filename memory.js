@@ -14,12 +14,16 @@ importance=5
 const {data,error}=await supabase
 .from("erebus_memory")
 .insert({
-content,
-category,
-importance
+    content,
+    category,
+    importance
 })
 .select();
 
+
+console.log("Supabase返回:");
+console.log(data);
+console.log(error);
 
 if(error){
 console.error(
