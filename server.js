@@ -4,6 +4,11 @@ const Fastify = require("fastify");
 const fs = require("fs-extra");
 const path = require("path");
 const {
+  addMemory,
+  getMemories,
+  analyzeMemory
+} = require("./memory");
+const {
   formatDateTimeInTimeZone,
   resolveTimeZone,
   zonedWallTimeToDate
