@@ -1,6 +1,8 @@
 const supabase = require("./supabase");
 
-
+const TARGET_API_URL = process.env.TARGET_API_URL;
+const TARGET_API_KEY = process.env.TARGET_API_KEY;
+const MODEL_NAME = process.env.MODEL_NAME;
 
 async function addMemory(memory){
 
