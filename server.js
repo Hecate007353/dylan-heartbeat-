@@ -781,6 +781,33 @@ saveTimeline(finalTimeline);
       .map(prepareMessageForLLM)
       .filter(Boolean);
 
+   // Erebus memory 自动分析
+try {
+
+const memoryResult =
+await analyzeMemory(llmMessages);
+
+
+if(memoryResult && memoryResult.save){
+
+await addMemory(memoryResult);
+
+console.log(
+"🧠 Erebus 新记忆:",
+memoryResult.content
+);
+
+}
+
+}catch(err){
+
+console.error(
+"Erebus memory analyze failed:",
+err
+);
+
+}
+
     const oldEvents = stripPosition(
       oldTimeline.filter(isSpecialEvent).sort((a, b) => {
         const timeA = extractTimestampWithMemory(a, tsDB);
