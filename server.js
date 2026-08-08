@@ -737,6 +737,35 @@ app.post("/v1/chat/completions", async (req, reply) => {
     }));
 
     const kelivoMessages = body.messages || [];
+
+    const {
+ addMemory,
+ getMemories
+}=require("./memory");
+
+
+console.log("MEMORY TEST START");
+
+
+await addMemory({
+ content:"测试Erebus memory连接",
+ category:"test",
+ importance:5
+});
+
+
+const testMemories = await getMemories(5);
+
+
+console.log(
+ "CURRENT MEMORY:",
+ JSON.stringify(testMemories)
+);
+
+
+console.log("MEMORY TEST END");
+
+    
     console.log(
   kelivoMessages
     .filter(m => m.role === "user" || m.role === "assistant")
