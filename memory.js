@@ -161,9 +161,15 @@ model:MODEL_NAME,
 messages:[
 {
 role:"system",
+content:
+"你是Erebus长期记忆管理模块，只负责判断是否保存长期记忆，只输出JSON。"
+},
+{
+role:"user",
 content:prompt
 }
 ],
+
 
 temperature:0.2
 
