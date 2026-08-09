@@ -151,7 +151,7 @@ return data[0];
 
 async function analyzeMemory(messages){
 
-const memories = await getMemories(50);
+const memories = await getMemories(30);
 
 const prompt = `
 你是Erebus长期记忆管理模块。
