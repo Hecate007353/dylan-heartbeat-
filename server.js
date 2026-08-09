@@ -1344,6 +1344,10 @@ headers:{
 "Content-Type":"application/json",
 Authorization:`Bearer ${process.env.TARGET_API_KEY}`
 },
+console.log(
+"发送给上游stream:",
+body.stream
+);
 body: JSON.stringify({
 model: body.model || configuredModelName(),
 messages: llmMessages
