@@ -7,6 +7,7 @@ const {
   addMemory,
   getMemories,
   updateMemory,
+  deleteMemory,
   analyzeMemory
 } = require("./memory");
 const {
