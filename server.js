@@ -964,6 +964,10 @@ response.headers.get("content-type")
     // 批注 2026-07-11：Kelivo 关闭 stream 时需要收到普通 JSON；只在请求或上游确认为 SSE 时才按流式直通。
     if (!shouldStreamResponse) {
       const responseText = await response.text();
+      console.log(
+"上游完整返回:",
+responseText.slice(0,500)
+);
       return reply
         .code(response.status)
         .header("Content-Type", upstreamContentType || "application/json")
