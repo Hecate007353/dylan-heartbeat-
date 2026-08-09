@@ -787,6 +787,11 @@ msg.role === "assistant"
 // 读取 Supabase 历史聊天
 // ========================
 
+console.log(
+  "Render当前时间:",
+  new Date().toISOString()
+);
+    
 async function getRecentMessages(limit = 20){
 
 const {data,error}=await supabase
