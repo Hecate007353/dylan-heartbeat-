@@ -842,7 +842,7 @@ memoryResult.action === "add"
 &&
 typeof memoryResult.content === "string"
 &&
-memoryResult.content.startsWith("（")
+memoryResult.content.startsWith("（Erebus观察")
 ){
 
 console.log(
