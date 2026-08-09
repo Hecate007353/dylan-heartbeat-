@@ -780,15 +780,27 @@ const llmMessages = kelivoMessages
 // 保留 assistant，因为 Erebus 的观察也属于memory来源
 const memoryMessages =
 kelivoMessages
-.filter(msg =>
+.filter(
+msg =>
 (
 msg.role === "user" ||
 msg.role === "assistant"
 )
 &&
-!String(msg.content).includes("function_calls")
+!String(msg.content)
+.includes("<invoke")
 &&
-!String(msg.content).includes("<invoke")
+!String(msg.content)
+.includes("function_calls")
+&&
+!String(msg.content)
+.includes("edit_memory")
+&&
+!String(msg.content)
+.includes("create_memory")
+&&
+!String(msg.content)
+.includes("delete_memory")
 )
 .slice(-6);
 
