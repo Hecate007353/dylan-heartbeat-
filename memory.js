@@ -474,7 +474,48 @@ action:"none"
 const memory =
 JSON.parse(jsonMatch[0]);
 
+// assistant推测保护
+if(
+memory.action==="add"
+||
+memory.action==="update"
+){
 
+const content =
+String(memory.content||"");
+
+
+if(
+messages.some(
+m=>m.role==="assistant"
+&&
+!messages.some(
+u=>
+u.role==="user"
+&&
+u.content.includes(content)
+)
+)
+){
+
+if(memory.importance>3){
+
+console.log(
+"检测到可能来自assistant推测，降低importance"
+);
+
+memory.importance=3;
+
+memory.content=
+"（Erebus观察：" 
++ memory.content
++"）";
+
+}
+
+}
+
+}
 
 console.log(
 "Erebus memory decision:",
