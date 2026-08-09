@@ -803,14 +803,16 @@ if(memoryResult){
 
   }
 
-  else if(memoryResult.action === "update"){
+ else if(memoryResult.action === "update"){
 
-    console.log(
-      "🧠 Erebus 请求更新记忆:",
-      memoryResult
-    );
+await updateMemory(memoryResult);
 
-  }
+console.log(
+"🧠 Erebus 更新记忆:",
+memoryResult.content
+);
+
+}
 
   else if(memoryResult.action === "delete"){
 
