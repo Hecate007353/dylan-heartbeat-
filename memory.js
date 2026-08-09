@@ -114,12 +114,24 @@ memory_id
 .select();
 
 
-
 if(error){
 
 console.error(
 "memory delete error",
 error
+);
+
+return null;
+
+}
+
+
+// 防止重复删除
+if(!data || data.length===0){
+
+console.log(
+"🧠 记忆不存在，可能已经被删除:",
+memory_id
 );
 
 return null;
