@@ -330,15 +330,6 @@ if (userMsgs.length && assistantMsgs.length) {
 }
 
 
-      if (userMsg && assistantMsg) {
-
-        await saveChatPair(
-          userMsg.content,
-          assistantMsg.content
-        );
-
-      }
-
     }
 
 
