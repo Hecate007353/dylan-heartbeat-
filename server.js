@@ -1339,16 +1339,14 @@ null,
 
 // 请求模型
 const response = await fetch(TARGET_API_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.TARGET_API_KEY}`
-  },
-  body: JSON.stringify({
-  ...body,
-  temperature: undefined,
-  top_p: undefined,
-  messages: llmMessages
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:`Bearer ${process.env.TARGET_API_KEY}`
+},
+body: JSON.stringify({
+model: body.model || configuredModelName(),
+messages: llmMessages
 })
 });
 
