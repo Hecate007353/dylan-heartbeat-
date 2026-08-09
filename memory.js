@@ -337,7 +337,7 @@ let clean = text
 
 
 const jsonMatch =
-clean.match(/{[\s\S]*}/);
+clean.match(/{[\s\S]*?}/);
 
 
 
