@@ -763,7 +763,8 @@ app.post("/v1/chat/completions", async (req, reply) => {
 
 
 // 最后才保存 timeline
-saveTimeline(finalTimeline);
+saveTimeline(finalTimeline)
+.catch(err=>console.error(err));
 
 // Kelivo 发图时 content 常是数组。默认原样透传给视觉模型；
 // 如上游不支持图片，可设置 MULTIMODAL_MODE=text 退回文本占位。
