@@ -814,6 +814,21 @@ try {
     if(memoryResult.action === "add"){
 
 
+      if(
+!memoryResult.content ||
+memoryResult.content.length < 3
+){
+
+console.log(
+"⚠️ 记忆内容异常，跳过保存:",
+memoryResult
+);
+
+}
+else{
+
+
+
       const result =
         await addMemory(memoryResult);
 
