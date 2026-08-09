@@ -788,30 +788,30 @@ JSON.stringify(memoryMessages,null,2)
 );
 
 
-const memoryResult =
-await analyzeMemory(memoryMessages);
+try {
 
+  const memoryResult =
+    await analyzeMemory(memoryMessages);
 
-if(memoryResult && memoryResult.save){
+  if(memoryResult && memoryResult.save){
 
-await addMemory(memoryResult);
+    await addMemory(memoryResult);
 
-console.log(
-"🧠 Erebus 新记忆:",
-memoryResult.content
-);
+    console.log(
+      "🧠 Erebus 新记忆:",
+      memoryResult.content
+    );
+
+  }
+
+} catch(err){
+
+  console.error(
+    "Erebus memory analyze failed:",
+    err
+  );
 
 }
-
-}catch(err){
-
-console.error(
-"Erebus memory analyze failed:",
-err
-);
-
-}
-
     const oldEvents = stripPosition(
       oldTimeline.filter(isSpecialEvent).sort((a, b) => {
         const timeA = extractTimestampWithMemory(a, tsDB);
