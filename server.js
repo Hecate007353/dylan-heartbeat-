@@ -1535,7 +1535,7 @@ console.log(
 "✅ assistant回复保存完成"
 );
 
-
+}
 } catch (err) {
     console.error(err);
     reply.code(500).send({ error: err.message });
