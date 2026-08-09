@@ -397,15 +397,41 @@ try{
 
 console.log("🧠 memory请求开始");
 
+
+// ========================
+// memory请求超时保护
+// ========================
+
+const controller = new AbortController();
+
+const timer = setTimeout(
+()=>{
+
+console.log(
+"🧠 memory请求超过30秒，主动取消"
+);
+
+controller.abort();
+
+},
+30000
+);
+
+
+
 const response = await fetch(
 TARGET_API_URL,
 {
+signal: controller.signal,
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json",
 "Authorization":
 `Bearer ${TARGET_API_KEY}`
 },
+
 body:JSON.stringify({
 
 stream:false,
@@ -430,16 +456,21 @@ content:prompt
 temperature:0.2
 
 })
+
 }
 );
 
 
-// 放这里
+// 请求完成，取消计时器
+
+clearTimeout(timer);
+
+
+
 console.log(
 "🧠 memory请求状态:",
 response.status
 );
-
 
 let result;
 
