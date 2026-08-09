@@ -791,9 +791,11 @@ JSON.stringify(memoryMessages,null,2)
 try {
 
   const memoryResult =
-    await analyzeMemory(memoryMessages);
+  await analyzeMemory(memoryMessages);
 
-  if(memoryResult && memoryResult.save){
+if(memoryResult){
+
+  if(memoryResult.action === "add"){
 
     await addMemory(memoryResult);
 
@@ -803,6 +805,26 @@ try {
     );
 
   }
+
+  else if(memoryResult.action === "update"){
+
+    console.log(
+      "🧠 Erebus 请求更新记忆:",
+      memoryResult
+    );
+
+  }
+
+  else if(memoryResult.action === "delete"){
+
+    console.log(
+      "🧠 Erebus 请求删除记忆:",
+      memoryResult
+    );
+
+  }
+
+}
 
 } catch(err){
 
