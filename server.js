@@ -817,7 +817,55 @@ try {
   const memoryResult =
     await analyzeMemory(memoryMessages);
 
+// ========================
+// assistant推测保护
+// ========================
 
+if(memoryResult){
+
+const userTexts =
+memoryMessages
+.filter(
+msg => msg.role === "user"
+)
+.map(
+msg => String(msg.content)
+)
+.join("\n");
+
+
+// 只有add才降低
+// update/delete不要影响
+
+if(
+memoryResult.action === "add"
+&&
+memoryResult.content
+&&
+memoryResult.content.startsWith("（")
+&&
+!userTexts.includes("喜欢")
+){
+
+console.log(
+"检测到可能来自assistant推测，降低importance"
+);
+
+
+memoryResult.importance =
+Math.min(
+memoryResult.importance || 3,
+3
+);
+
+}
+
+}
+
+
+// ========================
+// 原来的处理继续
+// ========================
 
   if(memoryResult){
 
