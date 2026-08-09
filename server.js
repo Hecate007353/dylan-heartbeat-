@@ -815,14 +815,16 @@ memoryResult.content
 
 }
 
-  else if(memoryResult.action === "delete"){
+else if(memoryResult.action==="delete"){
 
-    console.log(
-      "🧠 Erebus 请求删除记忆:",
-      memoryResult
-    );
+await deleteMemory(memoryResult);
 
-  }
+console.log(
+"🧠 Erebus 删除记忆:",
+memoryResult.memory_id
+);
+
+}
 
 }
 
