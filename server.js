@@ -946,7 +946,12 @@ const response = await fetch(TARGET_API_URL, {
     "Content-Type": "application/json",
     Authorization: `Bearer ${process.env.TARGET_API_KEY}`
   },
-  body: JSON.stringify({ ...body, messages: llmMessages })
+  body: JSON.stringify({
+  ...body,
+  temperature: undefined,
+  top_p: undefined,
+  messages: llmMessages
+})
 });
 
 
