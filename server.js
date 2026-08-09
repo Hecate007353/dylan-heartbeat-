@@ -1258,6 +1258,13 @@ console.log(JSON.stringify({
     summarizeMessagesForLog(llmMessages)
 
 }));
+    console.log(
+JSON.stringify(
+llmMessages,
+null,
+2
+).slice(0,3000)
+);
     // ---- 自动修复不完整的 tool 调用（双向清理） ----
     // 第一遍：标记需要移除的索引
     const removeSet = new Set();
