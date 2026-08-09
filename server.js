@@ -1440,32 +1440,103 @@ const reader =
   response.body.getReader();
 
 
+let assistantContent = "";
+
 while (true) {
 
-  const {
-    done,
-    value
-  } = await reader.read();
+const {
+done,
+value
+} = await reader.read();
+
+if (done) break;
 
 
-  if (done) break;
+const chunk =
+Buffer.from(value).toString();
 
 
-  console.log(
-    "收到stream:",
-    Buffer.from(value)
-      .toString()
-      .slice(0,200)
-  );
+console.log(
+"收到stream:",
+chunk.slice(0,200)
+);
 
 
-  reply.raw.write(value);
+// 收集 assistant 内容
+for (const line of chunk.split("\n")) {
+
+if (!line.startsWith("data: ")) continue;
+
+const data = line.replace("data: ","").trim();
+
+if (data === "[DONE]") continue;
+
+
+try {
+
+const json = JSON.parse(data);
+
+const delta =
+json.choices?.[0]?.delta?.content;
+
+
+if (delta) {
+assistantContent += delta;
+}
+
+
+} catch {}
+
+}
+
+
+
+reply.raw.write(value);
 
 }
 
 
 reply.raw.end();
-  } catch (err) {
+
+
+// ========================
+// 流结束后保存 assistant
+// ========================
+
+if (assistantContent.trim()) {
+
+
+const updatedTimeline = loadTimeline();
+
+
+updatedTimeline.push({
+
+role:"assistant",
+
+content:assistantContent
+
+});
+
+
+fs.writeJsonSync(
+TIMELINE_FILE,
+updatedTimeline,
+{spaces:2}
+);
+
+
+await saveChatPair(
+kelivoMessages[kelivoMessages.length-1]?.content || "",
+assistantContent
+);
+
+
+console.log(
+"✅ assistant回复保存完成"
+);
+
+
+} catch (err) {
     console.error(err);
     reply.code(500).send({ error: err.message });
   }
