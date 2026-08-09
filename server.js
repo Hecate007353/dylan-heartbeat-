@@ -1352,16 +1352,11 @@ const response = await fetch(TARGET_API_URL, {
     Authorization:`Bearer ${process.env.TARGET_API_KEY}`
   },
 
-  body: JSON.stringify({
-
-    model: body.model || configuredModelName(),
-
-    messages: llmMessages,
-
-    stream: body.stream === true
-
-  })
-
+ body: JSON.stringify({
+model: body.model || configuredModelName(),
+stream: body.stream === true,
+messages: llmMessages
+})
 });
 
 
