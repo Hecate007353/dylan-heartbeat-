@@ -767,9 +767,176 @@ saveTimeline(finalTimeline);
 
 // Kelivo 发图时 content 常是数组。默认原样透传给视觉模型；
 // 如上游不支持图片，可设置 MULTIMODAL_MODE=text 退回文本占位。
-const llmMessages = kelivoMessages
-  .map(prepareMessageForLLM)
-  .filter(Boolean);
+// ========================
+// Erebus 独立上下文系统（测试版）
+// Supabase message + memory
+// ========================
+
+
+// 当前用户本轮消息
+const currentUserMessages =
+kelivoMessages.filter(
+msg =>
+msg.role === "user" ||
+msg.role === "assistant"
+);
+
+
+// ========================
+// 读取 Supabase 历史聊天
+// ========================
+
+async function getRecentMessages(limit = 20){
+
+const {data,error}=await supabase
+.from("message")
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+.limit(limit);
+
+
+if(error){
+
+console.error(
+"读取message失败:",
+error
+);
+
+return [];
+
+}
+
+
+// Supabase倒序
+// 转回来正序
+
+return data.reverse();
+
+}
+
+
+
+// ========================
+// 读取memory
+// 测试版 importance排序
+// ========================
+
+async function getImportantMemories(limit=30){
+
+const {data,error}=await supabase
+.from("erebus_memory")
+.select("*")
+.order(
+"importance",
+{
+ascending:false
+}
+)
+.order(
+"updated_at",
+{
+ascending:false
+}
+)
+.limit(limit);
+
+
+if(error){
+
+console.error(
+"读取memory失败:",
+error
+);
+
+return [];
+
+}
+
+
+return data;
+
+}
+
+
+
+
+const supabaseMessages =
+await getRecentMessages(20);
+
+
+
+const memories =
+await getImportantMemories(30);
+
+
+
+
+// ========================
+// 构建注入内容
+// ========================
+
+
+const memorySystem = {
+
+role:"system",
+
+content:
+
+`
+Erebus长期记忆：
+
+${memories
+.map(
+m =>
+`- ${m.content}`
+)
+.join("\n")}
+
+`
+
+};
+
+
+
+
+// ========================
+// 最终发送模型消息
+// ========================
+
+
+const mergedMessages = [
+
+memorySystem,
+
+...supabaseMessages.map(
+m=>({
+role:m.role,
+content:m.content
+})
+),
+
+
+// 当前Kelivo请求保留原格式
+// 包括图片
+
+...currentUserMessages
+
+];
+
+
+
+// 保留原来的图片/tool处理
+
+const llmMessages =
+mergedMessages
+.map(prepareMessageForLLM)
+.filter(Boolean);
+
 
 
 // ========================
