@@ -271,8 +271,50 @@ save:false
 }
 
 }
+
+async function updateMemory(memory){
+
+const {
+memory_id,
+content,
+category,
+importance
+}=memory;
+
+
+const {data,error}=await supabase
+.from("erebus_memory")
+.update({
+content,
+category,
+importance,
+updated_at:new Date()
+})
+.eq(
+"id",
+memory_id
+)
+.select();
+
+
+if(error){
+
+console.error(
+"memory update error",
+error
+);
+
+return null;
+
+}
+
+return data[0];
+
+}
+
 module.exports={
 addMemory,
+updateMemory,
 getMemories,
 analyzeMemory
 };
