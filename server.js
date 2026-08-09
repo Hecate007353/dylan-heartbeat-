@@ -768,13 +768,14 @@ saveTimeline(finalTimeline);
       .map(prepareMessageForLLM)
       .filter(Boolean);
 
-   // Erebus memory 自动分析
 const memoryMessages =
-kelivoMessages.filter(
+kelivoMessages
+.filter(
 msg =>
 msg.role === "user" ||
 msg.role === "assistant"
-);
+)
+.slice(-10);
 
 
 console.log(
