@@ -939,62 +939,114 @@ if(memoryResult){
 
     const requestedStream = body?.stream === true;
 
-    // 请求模型
-    const response = await fetch(TARGET_API_URL, {
-      console.log(
-"上游状态:",
-response.status
+// 请求模型
+const response = await fetch(TARGET_API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.TARGET_API_KEY}`
+  },
+  body: JSON.stringify({ ...body, messages: llmMessages })
+});
+
+
+console.log(
+  "上游状态:",
+  response.status
 );
 
 console.log(
-"上游类型:",
-response.headers.get("content-type")
+  "上游类型:",
+  response.headers.get("content-type")
 );
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.TARGET_API_KEY}`
-      },
-      body: JSON.stringify({ ...body, messages: llmMessages })
+
+
+const upstreamContentType =
+  response.headers.get("content-type") || "";
+
+const shouldStreamResponse =
+  requestedStream ||
+  upstreamContentType.includes("text/event-stream");
+
+
+// 批注 2026-07-11：Kelivo 关闭 stream 时需要收到普通 JSON；
+// 只在请求或上游确认为 SSE 时才按流式直通。
+if (!shouldStreamResponse) {
+
+  const responseText =
+    await response.text();
+
+
+  console.log(
+    "上游完整返回:",
+    responseText.slice(0,500)
+  );
+
+
+  return reply
+    .code(response.status)
+    .header(
+      "Content-Type",
+      upstreamContentType || "application/json"
+    )
+    .send(responseText);
+}
+
+
+if (!response.body) {
+
+  return reply
+    .code(response.status)
+    .send({
+      error:"上游 API 没有返回可读取的响应体"
     });
 
-    const upstreamContentType = response.headers.get("content-type") || "";
-    const shouldStreamResponse = requestedStream || upstreamContentType.includes("text/event-stream");
+}
 
-    // 批注 2026-07-11：Kelivo 关闭 stream 时需要收到普通 JSON；只在请求或上游确认为 SSE 时才按流式直通。
-    if (!shouldStreamResponse) {
-      const responseText = await response.text();
-      console.log(
-"上游完整返回:",
-responseText.slice(0,500)
-);
-      return reply
-        .code(response.status)
-        .header("Content-Type", upstreamContentType || "application/json")
-        .send(responseText);
-    }
 
-    if (!response.body) {
-      return reply.code(response.status).send({ error: "上游 API 没有返回可读取的响应体" });
-    }
+reply.raw.writeHead(response.status, {
 
-    reply.raw.writeHead(response.status, {
-      "Content-Type": upstreamContentType || "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive"
-    });
+  "Content-Type":
+    upstreamContentType || "text/event-stream",
 
-    const reader = response.body.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      reply.raw.write(value);
-      console.log(
-"收到stream:",
-Buffer.from(value).toString().slice(0,200)
-);
-    }
-    reply.raw.end();
+  "Cache-Control":
+    "no-cache",
+
+  Connection:
+    "keep-alive"
+
+});
+
+
+const reader =
+  response.body.getReader();
+
+
+while (true) {
+
+  const {
+    done,
+    value
+  } = await reader.read();
+
+
+  if (done) break;
+
+
+  console.log(
+    "收到stream:",
+    Buffer.from(value)
+      .toString()
+      .slice(0,200)
+  );
+
+
+  reply.raw.write(value);
+
+}
+
+
+reply.raw.end();
   } catch (err) {
     console.error(err);
     reply.code(500).send({ error: err.message });
