@@ -840,11 +840,9 @@ msg => String(msg.content)
 if(
 memoryResult.action === "add"
 &&
-memoryResult.content
+typeof memoryResult.content === "string"
 &&
 memoryResult.content.startsWith("（")
-&&
-!userTexts.includes("喜欢")
 ){
 
 console.log(
