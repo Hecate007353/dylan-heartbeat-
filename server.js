@@ -989,6 +989,10 @@ responseText.slice(0,500)
       const { done, value } = await reader.read();
       if (done) break;
       reply.raw.write(value);
+      console.log(
+"收到stream:",
+Buffer.from(value).toString().slice(0,200)
+);
     }
     reply.raw.end();
   } catch (err) {
