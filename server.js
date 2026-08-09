@@ -764,111 +764,250 @@ app.post("/v1/chat/completions", async (req, reply) => {
 
 // 最后才保存 timeline
 saveTimeline(finalTimeline);
-    // Kelivo 发图时 content 常是数组。默认原样透传给视觉模型；
-    // 如上游不支持图片，可设置 MULTIMODAL_MODE=text 退回文本占位。
-    const llmMessages = kelivoMessages
-      .map(prepareMessageForLLM)
-      .filter(Boolean);
 
+// Kelivo 发图时 content 常是数组。默认原样透传给视觉模型；
+// 如上游不支持图片，可设置 MULTIMODAL_MODE=text 退回文本占位。
+const llmMessages = kelivoMessages
+  .map(prepareMessageForLLM)
+  .filter(Boolean);
+
+
+// ========================
+// Erebus Memory 自动分析
+// ========================
+
+// 只取最近一轮对话
+// 保留 assistant，因为 Erebus 的观察也属于memory来源
 const memoryMessages =
-kelivoMessages
-.filter(
-msg =>
-msg.role === "user" ||
-msg.role === "assistant"
-)
-.slice(-2);
+  kelivoMessages
+    .filter(
+      msg =>
+        msg.role === "user" ||
+        msg.role === "assistant"
+    )
+    .slice(-2);
 
 
 console.log(
-"发送给Erebus memory分析:",
-JSON.stringify(memoryMessages,null,2)
+  "发送给Erebus memory分析:",
+  JSON.stringify(memoryMessages,null,2)
 );
 
 
 try {
 
+
   const memoryResult =
-  await analyzeMemory(memoryMessages);
+    await analyzeMemory(memoryMessages);
 
-if(memoryResult){
 
-  if(memoryResult.action === "add"){
 
-    await addMemory(memoryResult);
+  if(memoryResult){
 
-    console.log(
-      "🧠 Erebus 新记忆:",
-      memoryResult.content
-    );
+
+    // 新增记忆
+    if(memoryResult.action === "add"){
+
+
+      const result =
+        await addMemory(memoryResult);
+
+
+      if(result){
+
+        console.log(
+          "🧠 Erebus 新记忆:",
+          result.content
+        );
+
+      }
+
+    }
+
+
+
+    // 更新记忆
+    else if(memoryResult.action === "update"){
+
+
+      const result =
+        await updateMemory(memoryResult);
+
+
+      if(result){
+
+        console.log(
+          "🧠 Erebus 更新记忆:",
+          result.content
+        );
+
+      }
+
+    }
+
+
+
+    // 删除记忆
+    else if(memoryResult.action === "delete"){
+
+
+      const result =
+        await deleteMemory(memoryResult);
+
+
+      if(result){
+
+        console.log(
+          "🗑️ Erebus 删除记忆:",
+          result.id
+        );
+
+      }
+
+    }
+
+
+
+    // 无操作
+    else if(memoryResult.action === "none"){
+
+
+      console.log(
+        "🧠 Erebus memory: 无变化"
+      );
+
+    }
+
 
   }
 
- else if(memoryResult.action === "update"){
 
-await updateMemory(memoryResult);
+}catch(err){
 
-console.log(
-"🧠 Erebus 更新记忆:",
-memoryResult.content
-);
-
-}
-
-else if(memoryResult.action==="delete"){
-
-await deleteMemory(memoryResult);
-
-console.log(
-"🧠 Erebus 删除记忆:",
-memoryResult.memory_id
-);
-
-}
-
-}
-
-} catch(err){
 
   console.error(
     "Erebus memory analyze failed:",
     err
   );
 
+
 }
-    const oldEvents = stripPosition(
-      oldTimeline.filter(isSpecialEvent).sort((a, b) => {
-        const timeA = extractTimestampWithMemory(a, tsDB);
-        const timeB = extractTimestampWithMemory(b, tsDB);
-        if (timeA && timeB) return timeA - timeB;
-        return 0;
-      })
+
+
+
+// ========================
+// 注入历史特殊事件
+// ========================
+
+const oldEvents = stripPosition(
+  oldTimeline
+    .filter(isSpecialEvent)
+    .sort((a, b) => {
+
+      const timeA =
+        extractTimestampWithMemory(a, tsDB);
+
+      const timeB =
+        extractTimestampWithMemory(b, tsDB);
+
+
+      if(timeA && timeB)
+        return timeA - timeB;
+
+
+      return 0;
+
+    })
+);
+
+
+
+console.log(
+  "本次注入的特殊事件数量:",
+  oldEvents.length
+);
+
+
+
+for (const event of oldEvents) {
+
+
+  const eventTime =
+    extractTimestampWithMemory(
+      event,
+      tsDB
     );
 
-    console.log("本次注入的特殊事件数量:", oldEvents.length);
 
-    for (const event of oldEvents) {
-      const eventTime = extractTimestampWithMemory(event, tsDB);
-      if (!eventTime) { llmMessages.push(event); continue; }
-      let inserted = false;
-      for (let i = 0; i < llmMessages.length; i++) {
-        const msgTime = extractTimestampWithMemory(llmMessages[i], tsDB);
-        if (msgTime && msgTime >= eventTime) {
-          llmMessages.splice(i, 0, event);
-          inserted = true;
-          break;
-        }
-      }
-      if (!inserted) llmMessages.push(event);
+  if(!eventTime){
+
+    llmMessages.push(event);
+
+    continue;
+
+  }
+
+
+
+  let inserted=false;
+
+
+
+  for(
+    let i=0;
+    i<llmMessages.length;
+    i++
+  ){
+
+
+    const msgTime =
+      extractTimestampWithMemory(
+        llmMessages[i],
+        tsDB
+      );
+
+
+
+    if(
+      msgTime &&
+      msgTime >= eventTime
+    ){
+
+      llmMessages.splice(
+        i,
+        0,
+        event
+      );
+
+      inserted=true;
+
+      break;
+
     }
 
+  }
 
 
-    console.log(JSON.stringify({
-      event: "llm_forward_summary",
-      messages: summarizeMessagesForLog(llmMessages)
-    }));
 
+  if(!inserted){
+
+    llmMessages.push(event);
+
+  }
+
+}
+
+
+
+console.log(JSON.stringify({
+
+  event:
+    "llm_forward_summary",
+
+  messages:
+    summarizeMessagesForLog(llmMessages)
+
+}));
     // ---- 自动修复不完整的 tool 调用（双向清理） ----
     // 第一遍：标记需要移除的索引
     const removeSet = new Set();
