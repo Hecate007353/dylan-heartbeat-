@@ -441,8 +441,33 @@ response.status
 );
 
 
-const result = await response.json();
+let result;
 
+const responseText = await response.text();
+
+console.log(
+"🧠 memory上游原始返回:",
+responseText.slice(0,500)
+);
+
+
+try {
+
+result = JSON.parse(responseText);
+
+}
+catch(e){
+
+console.error(
+"memory返回不是JSON:",
+responseText.slice(0,500)
+);
+
+return {
+action:"none"
+};
+
+}
 
 const text =
 result.choices[0].message.content;
