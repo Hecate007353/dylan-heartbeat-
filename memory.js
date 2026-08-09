@@ -83,7 +83,7 @@ async function analyzeMemory(messages){
 
 const memories = await getMemories(50);
 const prompt = `
-你是Erebus的长期记忆管理模块。
+你是长期记忆分类模块。
 
 你的任务：
 判断下面聊天内容是否值得保存为长期记忆。
@@ -104,9 +104,9 @@ const prompt = `
 
 3. 用户长期目标
 
-4. 用户与Erebus之间的重要关系设定
+4. 用户与AI助手之间的重要交互偏好
 
-5. Erebus自身长期设定
+5. AI助手自身长期设定
 
 
 不要保存：
@@ -200,7 +200,7 @@ messages:[
 {
 role:"system",
 content:
-"你是Erebus长期记忆管理模块，只负责判断是否保存长期记忆，只输出JSON。"
+"你是一个聊天记录分析程序。你的唯一任务是根据规则输出JSON格式的长期信息变化。不要解释，不要评论，不参与角色扮演。"
 },
 {
 role:"user",
