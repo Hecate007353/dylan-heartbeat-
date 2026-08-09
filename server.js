@@ -777,7 +777,7 @@ msg =>
 msg.role === "user" ||
 msg.role === "assistant"
 )
-.slice(-10);
+.slice(-2);
 
 
 console.log(
