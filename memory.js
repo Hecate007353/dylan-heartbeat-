@@ -397,7 +397,7 @@ headers:{
 },
 body:JSON.stringify({
 
-stream:false
+stream:false,
 
 model:MODEL_NAME,
 
