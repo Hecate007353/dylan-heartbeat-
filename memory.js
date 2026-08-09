@@ -386,12 +386,9 @@ ${JSON.stringify(messages)}
 try{
 
 console.log("🧠 memory请求开始");
+
 const response = await fetch(
 TARGET_API_URL,
-  console.log(
-"🧠 memory请求状态:",
-response.status
-);
 {
 method:"POST",
 headers:{
@@ -423,10 +420,15 @@ content:prompt
 temperature:0.2
 
 })
-
 }
 );
 
+
+// 放这里
+console.log(
+"🧠 memory请求状态:",
+response.status
+);
 
 
 const result = await response.json();
