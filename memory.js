@@ -81,6 +81,7 @@ return data;
 
 async function analyzeMemory(messages){
 
+const memories = await getMemories(50);
 const prompt = `
 你是Erebus的长期记忆管理模块。
 
@@ -116,25 +117,62 @@ const prompt = `
 - 临时情绪
 
 
-如果需要保存，输出：
+你需要比较“已有记忆”和“当前聊天”。
+
+你有四种操作：
+
+1. add
+当前聊天产生了一条新的长期记忆，
+而已有记忆中没有相同或高度相似的信息。
+
+2. update
+当前聊天对已有记忆进行了补充、修改或纠正。
+
+3. delete
+当前聊天明确表示某条已有记忆已经不再成立。
+
+4. none
+没有值得改变的长期记忆。
+
+如果是 add：
 
 {
-"save":true,
-"content":"简短记忆内容",
-"category":"分类",
-"importance":1-10
+  "action": "add",
+  "content": "简短、独立、长期有效的记忆",
+  "category": "preference",
+  "importance": 1
 }
 
-
-如果不需要：
+如果是 update：
 
 {
-"save":false
+  "action": "update",
+  "memory_id": 现有记忆的id,
+  "content": "更新后的完整记忆",
+  "category": "分类",
+  "importance": 1
+}
+
+如果是 delete：
+
+{
+  "action": "delete",
+  "memory_id": 现有记忆的id
+}
+
+如果什么都不用做：
+
+{
+  "action": "none"
 }
 
 
 只输出JSON。
 
+
+已有记忆：
+
+${JSON.stringify(memories)}
 
 聊天内容：
 
