@@ -941,6 +941,15 @@ if(memoryResult){
 
     // 请求模型
     const response = await fetch(TARGET_API_URL, {
+      console.log(
+"上游状态:",
+response.status
+);
+
+console.log(
+"上游类型:",
+response.headers.get("content-type")
+);
       method: "POST",
       headers: {
         "Content-Type": "application/json",
