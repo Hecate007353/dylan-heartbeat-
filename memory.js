@@ -397,6 +397,8 @@ headers:{
 },
 body:JSON.stringify({
 
+stream:false
+
 model:MODEL_NAME,
 
 messages:[
