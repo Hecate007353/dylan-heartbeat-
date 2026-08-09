@@ -229,12 +229,15 @@ let clean=text
 .trim();
 
 
-const memory=
+const memory =
 JSON.parse(clean);
 
+console.log(
+"Erebus memory decision:",
+JSON.stringify(memory,null,2)
+);
 
 return memory;
-
 
 }catch(error){
 
