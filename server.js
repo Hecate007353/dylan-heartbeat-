@@ -779,13 +779,18 @@ const llmMessages = kelivoMessages
 // 只取最近一轮对话
 // 保留 assistant，因为 Erebus 的观察也属于memory来源
 const memoryMessages =
-  kelivoMessages
-    .filter(
-      msg =>
-        msg.role === "user" ||
-        msg.role === "assistant"
-    )
-    .slice(-2);
+kelivoMessages
+.filter(msg =>
+(
+msg.role === "user" ||
+msg.role === "assistant"
+)
+&&
+!String(msg.content).includes("function_calls")
+&&
+!String(msg.content).includes("<invoke")
+)
+.slice(-6);
 
 
 console.log(
