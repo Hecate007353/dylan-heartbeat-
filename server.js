@@ -3,9 +3,10 @@
 const Fastify = require("fastify");
 const fs = require("fs-extra");
 const path = require("path");
-const {
+const { 
   addMemory,
   getMemories,
+  updateMemory,
   analyzeMemory
 } = require("./memory");
 const {
