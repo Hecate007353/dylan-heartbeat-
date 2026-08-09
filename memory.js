@@ -223,14 +223,32 @@ const text =
 result.choices[0].message.content;
 
 
-let clean=text
+let clean = text
 .replace(/```json/g,"")
 .replace(/```/g,"")
 .trim();
 
 
+const jsonMatch =
+clean.match(/\{[\s\S]*\}/);
+
+
+if(!jsonMatch){
+
+console.error(
+"Memory模型没有返回JSON:",
+text
+);
+
+return {
+action:"none"
+};
+
+}
+
+
 const memory =
-JSON.parse(clean);
+JSON.parse(jsonMatch[0]);
 
 console.log(
 "Erebus memory decision:",
