@@ -1338,20 +1338,30 @@ null,
     const requestedStream = body?.stream === true;
 
 // 请求模型
-const response = await fetch(TARGET_API_URL, {
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-Authorization:`Bearer ${process.env.TARGET_API_KEY}`
-},
 console.log(
-"发送给上游stream:",
-body.stream
+  "发送给上游stream:",
+  body.stream
 );
-body: JSON.stringify({
-model: body.model || configuredModelName(),
-messages: llmMessages
-})
+
+const response = await fetch(TARGET_API_URL, {
+
+  method:"POST",
+
+  headers:{
+    "Content-Type":"application/json",
+    Authorization:`Bearer ${process.env.TARGET_API_KEY}`
+  },
+
+  body: JSON.stringify({
+
+    model: body.model || configuredModelName(),
+
+    messages: llmMessages,
+
+    stream: body.stream === true
+
+  })
+
 });
 
 
