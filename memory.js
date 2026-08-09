@@ -508,10 +508,7 @@ JSON.parse(jsonMatch[0]);
 // assistant推测保护
 if(
 memory.action==="add"
-||
-memory.action==="update"
 ){
-
 const content =
 String(memory.content||"");
 
