@@ -917,9 +917,29 @@ try {
 // ========================
 
 const oldEvents = stripPosition(
-  oldTimeline
-    .filter(isSpecialEvent)
-    .sort((a, b) => {
+oldTimeline
+.filter(isSpecialEvent)
+.filter(event=>{
+
+const content =
+String(event.content || "");
+
+
+return (
+!content.includes("<invoke")
+&&
+!content.includes("function_calls")
+&&
+!content.includes("edit_memory")
+&&
+!content.includes("create_memory")
+&&
+!content.includes("delete_memory")
+);
+
+})
+.sort((a,b)=>{
+
 
       const timeA =
         extractTimestampWithMemory(a, tsDB);
