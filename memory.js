@@ -2,6 +2,8 @@ const fs = require("fs");
 
 const supabase = require("./supabase");
 
+const MEMORY_SEARCH_LIMIT = 30;
+
 const MEMORY_PROMPT = fs.readFileSync(
   "./memory_prompt.txt",
   "utf8"
