@@ -65,7 +65,7 @@ assistant内容可以保存，但是需要区分可信度。
 
 3. 用户长期目标
 
-4. 用户与Erebus之间长期交互模式
+4. 用户与assistant之间长期交互模式
 
 5. assistant长期观察
 
