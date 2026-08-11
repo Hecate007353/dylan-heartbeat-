@@ -2694,13 +2694,40 @@ app.get("/test-bark", async (req, reply) => {
 // ========================
 // 启动服务
 // ========================
+const { spawn } = require("child_process");
+
+let wakeupProcess = null;
+
+function startWakeup() {
+  wakeupProcess = spawn(
+    "node",
+    ["wake_up.js"],
+    {
+      stdio: "inherit"
+    }
+  );
+
+  wakeupProcess.on("exit", (code) => {
+    console.warn(
+      `wake_up.js 已退出，退出码: ${code}`
+    );
+
+    wakeupProcess = null;
+  });
+
+  console.log("✅ wake_up.js 已启动");
+}
+
 console.log("准备启动 Gateway...");
 console.log("PORT =", PORT);
 
-
 app.listen({ port: PORT, host: "0.0.0.0" })
 .then(address => {
+
   console.log(`✅ Gateway 运行在 ${address}`);
+
+  startWakeup();
+
 })
 .catch(err => {
   console.error("启动失败:", err);
