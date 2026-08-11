@@ -161,20 +161,6 @@ keywords应优先使用用户可能主动提及的实体、行为词。
 
 2. keywords必须使用简短词语。
 
-正确：
-
-content:
-用户喜欢喝咖啡
-
-keywords:
-["咖啡","饮品"]
-
-错误：
-
-keywords:
-["喜欢生活","享受日常","有品味"]
-
-
 3. 每条memory生成2-5个keywords。
 
 根据memory内容复杂度决定数量。
@@ -183,15 +169,7 @@ keywords:
 
 4. keywords不要写成完整句子。
 
-正确：
-
-["AI开发","编程","助手系统"]
-
-错误：
-
-["用户正在开发自己的AI助手系统"]
-
-6. update操作时：
+5. update操作时：
 
 如果memory内容发生变化，
 必须同步更新keywords。
@@ -200,19 +178,19 @@ keywords必须匹配新的content。
 
 不要保留已经不适用的旧keywords。
 
-7. delete操作：
+6. delete操作：
 
 不需要生成keywords。
 
-8. 不要使用keywords判断importance。
+7. 不要使用keywords判断importance。
 
 importance只根据memory长期影响程度判断。
 
-9. 不要因为两个memory属于同一领域而使用相同泛化关键词。
+8. 不要只生成领域词。
 泛化关键词最多作为辅助关键词，不可以成为唯一关键词。
+关键词必须帮助区分不同memory。
 
-例如：
-
+9. 例如：
 memory1:
 用户喜欢咖啡
 
@@ -224,12 +202,6 @@ memory2:
 
 keywords:
 ["奶茶","饮品"]
-
-不要只生成：
-
-["饮品"]
-
-keywords应该尽可能帮助区分不同memory。
 
 你有五种操作：
 
