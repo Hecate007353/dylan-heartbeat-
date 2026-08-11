@@ -444,33 +444,45 @@ JSON.parse(jsonMatch[0]);
 if(
 memory.action==="add"
 ){
+
 const content =
-String(memory.content||"");
+String(memory.content || "");
 
 
-const userText = messages
-.filter(m=>m.role==="user")
-.map(m=>m.content)
+const userText =
+messages
+.filter(
+m=>m.role==="user"
+)
+.map(
+m=>m.content
+)
 .join("");
 
 
-const fromUser =
-memory.keywords &&
-memory.keywords.some(
-keyword =>
-userText.includes(keyword)
+const assistantText =
+messages
+.filter(
+m=>m.role==="assistant"
+)
+.map(
+m=>m.content
+)
+.join("");
+
+
+// 判断memory是否更像来自assistant，而不是user
+const assistantOnly =
+!userText.includes(
+content
+)
+&&
+assistantText.includes(
+content
 );
 
 
-if(
-messages.some(
-m=>m.role==="assistant"
-)
-&&
-!fromUser
-){
-
-if(memory.importance>3){
+if(assistantOnly){
 
 console.log(
 "检测到可能来自assistant推测，降低importance"
@@ -478,11 +490,15 @@ console.log(
 
 memory.importance=3;
 
+if(
+!content.startsWith("（")
+){
 memory.content=
-"（Erebus观察：" 
-+ memory.content
-+"）";
-
+"（assistant观察："
++
+content
++
+"）";
 }
 
 }
