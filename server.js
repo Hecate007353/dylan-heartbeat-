@@ -282,19 +282,7 @@ function extractTimestamp(content) {
 // ========================
 // 时间戳记忆库
 // ========================
-function loadTimestampDB() {
-  if (!fs.existsSync(TIMESTAMP_DB_FILE)) return {};
-  try { return fs.readJsonSync(TIMESTAMP_DB_FILE); } catch { return {}; }
-}
 
-function saveTimestampDB(db) {
-    try {
-        fs.writeJsonSync(TIMESTAMP_DB_FILE, db, { spaces: 2 });
-    } catch (error) {
-        // 写入失败只会打印警告，不会让服务崩掉
-        console.warn(`⚠️ 写入 ${TIMESTAMP_DB_FILE} 失败，但不影响服务运行：`, error?.message || error);
-    }
-}
 
 function makeFingerprint(msg) {
   const raw = normalizeContentToText(msg.content);
@@ -306,16 +294,6 @@ function makeFingerprintStripped(msg) {
   const raw = normalizeContentToText(msg.content);
   const content = stripLeadingTimestamp(raw).slice(0, 150);
   return `${msg.role}::${content}`;
-}
-
-function extractTimestampWithMemory(msg, tsDB) {
-  const fromContent = extractTimestamp(normalizeContentToText(msg.content));
-  if (fromContent) return fromContent;
-  const fp = makeFingerprint(msg);
-  if (tsDB[fp]) return new Date(tsDB[fp]);
-  const fpStripped = makeFingerprintStripped(msg);
-  if (tsDB[fpStripped]) return new Date(tsDB[fpStripped]);
-  return null;
 }
 
 // ========================
