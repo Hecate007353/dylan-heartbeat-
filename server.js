@@ -89,8 +89,7 @@ const IS_RAILWAY_RUNTIME = Boolean(
   process.env.RAILWAY_PROJECT_ID ||
   process.env.RAILWAY_SERVICE_ID
 );
-const TIMELINE_FILE = "enhanced_messages.json";
-const TIMESTAMP_DB_FILE = "./message_timestamps.json";
+
 // 批注 2026-07-17：管理页保存 .env 后要让 PM2 刷新进程环境；保留原进程名，
 // 只补 --update-env，避免用户改完推送配置却继续运行旧值。
 const DEFAULT_RESTART_COMMAND = "pm2 restart gateway wake-up --update-env";
