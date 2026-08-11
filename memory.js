@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 const supabase = require("./supabase");
 
 const MEMORY_PROMPT = fs.readFileSync(
