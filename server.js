@@ -253,34 +253,6 @@ function safeJsonForInlineScript(value) {
     .replace(/\u2029/g, "\\u2029");
 }
 
-// ========================
-// 读取 timeline
-// ========================
-function loadTimeline() {
-  if (!fs.existsSync(TIMELINE_FILE)) return [];
-  try { return fs.readJsonSync(TIMELINE_FILE); } catch { return []; }
-}
-
-
-  // 保存时间戳到单独的数据库
-  try {
-    let tsDB = {};
-    if (fs.existsSync(TIMESTAMP_DB_FILE)) {
-      tsDB = fs.readJsonSync(TIMESTAMP_DB_FILE);
-    }
-    const lastUserMsg = [...messages].reverse().find(m => m.role === "user");
-    if (lastUserMsg) {
-      const key = new Date().toISOString();
-      tsDB[key] = {
-        role: lastUserMsg.role,
-        content: lastUserMsg.content,
-        timestamp: new Date().toISOString()
-      };
-      fs.writeJsonSync(TIMESTAMP_DB_FILE, tsDB, { spaces: 2 });
-    }
-  } catch (e) {
-    console.error('保存时间戳失败:', e.message);
-  }
 }
 // ========================
 // 提取时间戳（支持多种格式）
