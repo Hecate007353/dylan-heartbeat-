@@ -1082,26 +1082,6 @@ reply.raw.end();
 
 if (assistantContent.trim()) {
 
-
-const updatedTimeline = loadTimeline();
-
-
-updatedTimeline.push({
-
-role:"assistant",
-
-content:assistantContent
-
-});
-
-
-fs.writeJsonSync(
-TIMELINE_FILE,
-updatedTimeline,
-{spaces:2}
-);
-
-
 await saveChatPair(
 kelivoMessages[kelivoMessages.length-1]?.content || "",
 assistantContent
