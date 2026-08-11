@@ -2,6 +2,8 @@ const fs = require("fs");
 
 const supabase = require("./supabase");
 
+const MEMORY_SEARCH_LIMIT = 30;
+
 const MEMORY_PROMPT = fs.readFileSync(
   "./memory_prompt.txt",
   "utf8"
@@ -150,7 +152,104 @@ return data[0];
 
 }
 
+// ========================
+// 根据聊天内容搜索相关memory
+// ========================
 
+async function searchMemoryByContent(messages){
+
+  const text = messages
+    .map(msg => {
+      if(typeof msg.content === "string"){
+        return msg.content;
+      }
+      return "";
+    })
+    .join(" ");
+
+
+  if(!text.trim()){
+    return [];
+  }
+
+
+  // 提取中文词、英文词、数字组合
+  const words = text
+    .replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g," ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter(word => word.length >= 2);
+
+
+  if(words.length === 0){
+    return [];
+  }
+
+
+  // 去重
+  const uniqueWords = [
+    ...new Set(words)
+  ];
+
+
+  let results = [];
+
+
+  for(const word of uniqueWords){
+
+    const { data, error } = await supabase
+      .from("erebus_memory")
+      .select("*")
+      .ilike("content", `%${word}%`)
+      .limit(10);
+
+
+    if(error){
+
+      console.error(
+        "🧠 memory content搜索失败:",
+        error.message
+      );
+
+      continue;
+    }
+
+
+    if(data){
+
+      results.push(...data);
+
+    }
+
+  }
+
+
+  // id去重
+  const uniqueMemory = Array.from(
+    new Map(
+      results.map(memory => [
+        memory.id,
+        memory
+      ])
+    ).values()
+  );
+
+
+  // 优先保留importance高的相关memory
+  uniqueMemory.sort(
+    (a,b)=>
+      (b.importance || 0)
+      -
+      (a.importance || 0)
+  );
+
+
+  return uniqueMemory.slice(
+    0,
+    MEMORY_SEARCH_LIMIT
+  );
+
+}
 
 // ========================
 // 分析 memory
@@ -455,6 +554,7 @@ deleteMemory,
 
 getMemories,
 
-analyzeMemory
-
+analyzeMemory,
+  
+searchMemoryByContent
 };
