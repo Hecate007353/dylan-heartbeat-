@@ -2222,10 +2222,16 @@ app.post("/admin/restart", { preHandler: basicAuth }, async (req, reply) => {
 // ========================
 // 测试 Bark
 // ========================
+
 app.get("/test-bark", async (req, reply) => {
-  const formattedTime = formatDateTimeInTimeZone(new Date(), TIME_ZONE);
-  appendSpecialEvent(`（${formattedTime} 刚刚给用户发了 Bark：这是一条测试推送。）`);
-  reply.send({ success: true });
+
+const formattedTime = formatDateTimeInTimeZone(new Date(), TIME_ZONE);
+
+reply.send({ 
+  success: true,
+  time: formattedTime
+});
+
 });
 
 
