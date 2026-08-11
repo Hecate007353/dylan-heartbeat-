@@ -118,19 +118,13 @@ content使用括号表示。
 
 重要规则：
 
-importance不是“这件事有多有趣”。
-
 importance代表：
+该记忆未来影响assistant行为的程度。
 
-“这条记忆未来长期影响assistant行为的程度”。
+不是：
+新鲜度、特殊性、趣味性。
 
-不要因为：
-- 新鲜
-- 特别
-- 最近发生
-- 一次聊天内容
-
-提高importance。
+不要因此提高importance。
 
 
 注意：
