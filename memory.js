@@ -448,17 +448,26 @@ const content =
 String(memory.content||"");
 
 
+const userText = messages
+.filter(m=>m.role==="user")
+.map(m=>m.content)
+.join("");
+
+
+const fromUser =
+memory.keywords &&
+memory.keywords.some(
+keyword =>
+userText.includes(keyword)
+);
+
+
 if(
 messages.some(
 m=>m.role==="assistant"
-&&
-!messages.some(
-u=>
-u.role==="user"
-&&
-u.content.includes(content)
 )
-)
+&&
+!fromUser
 ){
 
 if(memory.importance>3){
