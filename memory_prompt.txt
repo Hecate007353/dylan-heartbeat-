@@ -156,7 +156,7 @@ importance不是“这件事有多有趣”。
 
 importance代表：
 
-“这条记忆未来长期影响Erebus行为的程度”。
+“这条记忆未来长期影响assistant行为的程度”。
 
 不要因为：
 - 新鲜
@@ -207,7 +207,7 @@ keywords的唯一用途是帮助系统检索memory
 
 keywords不是用于展示，不是用于分类，不是用于判断importance。
 
-keywords用于向Erebus提供相关长期记忆时进行快速检索
+keywords用于向assistant提供相关长期记忆时进行快速检索
 
 keywords不是memory内容本身
 
@@ -336,7 +336,7 @@ keywords应该尽可能帮助区分不同memory。
 
 update中的content必须是事实陈述。
 不要使用：
-（Erebus观察）
+（assistant观察）
 括号格式。
 
 只有assistant推测新增记忆(add)才允许使用括号。
