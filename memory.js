@@ -173,18 +173,37 @@ async function searchMemoryByContent(messages){
   }
 
 
-  // 提取中文词、英文词、数字组合
-  const words = text
-    .replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g," ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .filter(word => word.length >= 2);
+  // 提取英文、数字
+const englishWords = text
+.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g," ")
+.split(/\s+/)
+.filter(Boolean)
+.filter(word => /^[a-zA-Z0-9]+$/.test(word));
 
 
-  if(words.length === 0){
-    return [];
+// 提取中文连续片段
+const chineseBlocks = text.match(/[\u4e00-\u9fa5]{2,}/g) || [];
+
+
+// 中文二字切片
+const chineseWords = chineseBlocks.flatMap(block=>{
+  const arr=[];
+
+  for(let i=0;i<block.length-1;i++){
+    arr.push(
+      block.slice(i,i+2)
+    );
   }
 
+  return arr;
+});
+
+
+const words = [
+  ...englishWords,
+  ...chineseWords
+]
+.filter(word=>word.length>=2);
 
   // 去重
   const uniqueWords = [
