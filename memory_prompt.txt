@@ -228,12 +228,8 @@ keywords:
 
 当前聊天补充、修改或升级已有记忆。
 
-update中的content必须是事实陈述。
-不要使用：
-（assistant观察）
-括号格式。
-
-只有assistant推测新增记忆(add)才允许使用括号。
+update必须输出事实陈述。
+括号只允许用于低可信add记忆。
 
 格式：
 
