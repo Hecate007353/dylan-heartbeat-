@@ -380,26 +380,6 @@ function isSystemRule(msg) {
 }
 
 
-// ========================
-// 追加特殊事件
-// ========================
-function appendSpecialEvent(content) {
-  const timeline = loadTimeline();
-  let maxPos = 0;
-  for (const msg of timeline) {
-    if (msg.position && msg.position > maxPos) maxPos = msg.position;
-  }
-  const newEvent = { role: "assistant", content, position: maxPos + 0.5 };
-  timeline.push(newEvent);
-  saveTimeline(timeline);
-  // 批注 2026-07-15：特殊事件可能包含推送正文；日志只记录长度，避免公开部署时泄漏私密内容。
-  console.log(`\n已记录特殊事件 (position ${newEvent.position}, chars ${normalizeContentToText(content).length})\n`);
-}
-
-function stripPosition(messages) {
-  return messages.map(({ position, ...rest }) => rest);
-}
-
 let wakeUpLastHeartbeat = null;
 
 // ========================
