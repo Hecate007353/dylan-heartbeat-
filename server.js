@@ -290,15 +290,6 @@ function isSpecialEvent(msg) {
   );
 }
 
-function isRealMessageForTimeline(msg) {
-  if (msg.role === "system") return false;
-  if (msg.tool_calls) return false;
-  if (isSpecialEvent(msg)) return false;
-  const contentText = normalizeContentToText(msg.content);
-  if (msg.role === "user" && contentText.trim().startsWith("<system>")) return false;
-  return msg.role === "user" || msg.role === "assistant";
-}
-
 function isSystemRule(msg) {
   if (msg.role === "system") return true;
   const contentText = normalizeContentToText(msg.content);
