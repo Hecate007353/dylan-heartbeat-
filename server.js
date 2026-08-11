@@ -1323,21 +1323,6 @@ console.log(
 });
 
 // ========================
-// 内部接口：记录唤醒事件
-// ========================
-app.post("/internal/wake-event", async (req, reply) => {
-  try {
-    const { content } = req.body;
-    if (!content) return reply.code(400).send({ error: "content is required" });
-    appendSpecialEvent(content);
-    reply.send({ success: true });
-  } catch (err) {
-    console.error(err);
-    reply.code(500).send({ error: err.message });
-  }
-});
-
-// ========================
 // 读取 .env 值
 // ========================
 function readEnvValue(key) {
