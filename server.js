@@ -280,23 +280,6 @@ function extractTimestamp(content) {
 }
 
 // ========================
-// 时间戳记忆库
-// ========================
-
-
-function makeFingerprint(msg) {
-  const raw = normalizeContentToText(msg.content);
-  const content = raw.trim().slice(0, 150);
-  return `${msg.role}::${content}`;
-}
-
-function makeFingerprintStripped(msg) {
-  const raw = normalizeContentToText(msg.content);
-  const content = stripLeadingTimestamp(raw).slice(0, 150);
-  return `${msg.role}::${content}`;
-}
-
-// ========================
 // 消息判断
 // ========================
 function isSpecialEvent(msg) {
