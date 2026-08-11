@@ -494,24 +494,6 @@ app.post("/v1/chat/completions", async (req, reply) => {
       content:String(m.content).slice(0,50)
     }))
 );
-    const oldTimeline = loadTimeline();
-
-    const tsDB = loadTimestampDB();
-    const oldRealMessages = oldTimeline.filter(
-    m => m.role === "user" || m.role === "assistant"
-    );
-    let tsDBDirty = false;
-    for (const msg of kelivoMessages) {
-      if (msg.role === "system") continue;
-      if (msg.role === "tool") continue;
-      const ts = extractTimestamp(normalizeContentToText(msg.content));
-      if (!ts) continue;
-      const fp = makeFingerprint(msg);
-      const fpStripped = makeFingerprintStripped(msg);
-      if (!tsDB[fp]) { tsDB[fp] = ts.toISOString(); tsDBDirty = true; }
-      if (!tsDB[fpStripped]) { tsDB[fpStripped] = ts.toISOString(); tsDBDirty = true; }
-    }
-    if (tsDBDirty) saveTimestampDB(tsDB);
 
 // timeline 已废弃，直接使用 Supabase + 当前请求
 const finalTimeline = kelivoMessages;
