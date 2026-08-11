@@ -478,8 +478,6 @@ app.post("/v1/chat/completions", async (req, reply) => {
 );
 
 // timeline 已废弃，直接使用 Supabase + 当前请求
-const finalTimeline = kelivoMessages;
-
 // Kelivo 发图时 content 常是数组。默认原样透传给视觉模型；
 // 如上游不支持图片，可设置 MULTIMODAL_MODE=text 退回文本占位。
 // ========================
