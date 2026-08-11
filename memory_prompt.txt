@@ -45,16 +45,20 @@ assistant内容可以保存，但是需要区分可信度。
 2. 用户身份信息
 
 例如：
-
-- 名字
-- 工作
-- 长期状态
+- 用户主动提供并长期有效的信息
+- 用户明确要求记录的信息
 
 3. 用户长期目标
 
 4. 用户与assistant之间长期交互模式
 
-5. assistant长期观察
+5. 长期交互模式
+
+必须来自：
+- 用户明确表达
+- 或系统提供长期稳定证据
+
+不能来自单次assistant判断。
 
 6. 禁止把时间、日期、当前事件、正在进行的项目操作添加到长期记忆。
 
@@ -123,14 +127,13 @@ content使用括号表示。
 
 - 长期计划
 - 稳定价值观
-- 用户明确表达的行为习惯
+- 长期坚持的方向
 
 16-18:
 高影响用户信息
 
 包括：
 - 会明显影响未来回答方式的信息
-必须来自用户明确表达，而不是assistant推断。
 - 用户明确要求长期遵守的规则
 不包括：
 - 用户询问意见
@@ -160,9 +163,8 @@ importance代表：
 低可信观察必须使用括号表示。
 
 只有满足以下条件之一：
-1. 信息来源可靠
-2. 用户明确确认
-3. 当前证据足够支持长期稳定
+1. 用户明确确认
+2. 当前证据足够支持长期稳定
 
 才允许：
 - 删除括号
@@ -190,18 +192,18 @@ importance代表：
 当前聊天
 
 keywords规则：
-keywords的唯一用途是帮助系统检索memory
 
-keywords不是用于展示，不是用于分类，不是用于判断importance。
+keywords唯一用途是memory检索。
 
-keywords用于向assistant提供相关长期记忆时进行快速检索
+keywords不是：
+- memory内容
+- 分类
+- importance判断依据
 
-keywords不是memory内容本身
-
-keywords应该优先描述用户可能主动提及的词，而不是抽象分类词
+keywords应优先使用用户可能主动提及的实体、行为词。
 
 生成规则：
-1. keywords必须来自memory事实中的实体、行为或明确类别词。
+1. keywords必须来自memory事实中的实体、行为或明确类别词
 
 不要加入：
 - 推测
@@ -241,21 +243,6 @@ keywords:
 错误：
 
 ["用户正在开发自己的AI助手系统"]
-
-5. keywords不能扩大memory含义。
-keywords可以是content中的核心实体或行为词。
-不要添加content没有明确表达的关联概念。
-例如：
-
-content:
-用户不喜欢客服式回复
-
-keywords:
-["客服式回复","交流方式"]
-
-不要：
-
-["情感需求","人格特点","陪伴"]
 
 6. update操作时：
 
@@ -310,9 +297,10 @@ keywords应该尽可能帮助区分不同memory。
 
 {
 "action":"add",
-"content":"记忆内容",
-"category":"分类",
-"importance":数字
+"content":"",
+"keywords":[],
+"category":"",
+"importance":
 }
 
 
@@ -332,10 +320,11 @@ update中的content必须是事实陈述。
 
 {
 "action":"update",
-"memory_id":已有记忆id,
-"content":"更新后的完整记忆",
-"category":"分类",
-"importance":数字
+"memory_id":"",
+"content":"",
+"keywords":[],
+"category":"",
+"importance":
 }
 
 
