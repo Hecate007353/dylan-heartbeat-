@@ -1,5 +1,10 @@
 const supabase = require("./supabase");
 
+const MEMORY_PROMPT = fs.readFileSync(
+  "./memory_prompt.txt",
+  "utf8"
+);
+
 const TARGET_API_URL = process.env.TARGET_API_URL;
 const TARGET_API_KEY = process.env.TARGET_API_KEY;
 const MODEL_NAME = process.env.MODEL_NAME;
