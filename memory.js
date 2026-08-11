@@ -158,7 +158,8 @@ return data[0];
 
 async function analyzeMemory(messages){
 
-const memories = await getMemories(30);
+const memories = await searchMemoryByContent(messages);
+
 
 const prompt = `
 ${MEMORY_PROMPT}
@@ -174,6 +175,7 @@ ${JSON.stringify(memories)}
 ${JSON.stringify(messages)}
 
 `;
+
 try{
 
 console.log("🧠 memory请求开始");
