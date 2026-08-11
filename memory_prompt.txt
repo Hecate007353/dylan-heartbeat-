@@ -397,7 +397,7 @@ update中的content必须是事实陈述。
 
 例如：
 
-（Erebus观察：小蝶可能喜欢蛇）
+（assistant观察：小蝶可能喜欢蛇）
 
 后来用户明确：
 
