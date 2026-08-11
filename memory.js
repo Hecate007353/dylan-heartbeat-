@@ -258,7 +258,10 @@ async function searchMemoryByContent(messages){
 async function analyzeMemory(messages){
 
 const memories = await searchMemoryByContent(messages);
-
+console.log(
+"🧠 memory检索结果:",
+JSON.stringify(memories,null,2)
+);
 
 const prompt = `
 ${MEMORY_PROMPT}
