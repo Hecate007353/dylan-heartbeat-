@@ -165,10 +165,6 @@ function normalizeContentToText(content) {
   return "[非文本内容]";
 }
 
-function normalizeMessageForTimeline(msg) {
-  return { ...msg, content: normalizeContentToText(msg.content) };
-}
-
 function prepareMessageForLLM(msg) {
   if (msg.role === "assistant" && msg.tool_calls) return msg;
   if (msg.role === "tool") return msg;
