@@ -22,6 +22,8 @@ async function addMemory(memory){
 
 const {
 content,
+keywords=[],
+extraction_terms=[],
 category="general",
 importance=5
 }=memory;
@@ -30,9 +32,17 @@ importance=5
 const {data,error}=await supabase
 .from("erebus_memory")
 .insert({
+
 content,
+
+keywords,
+
+extraction_terms,
+
 category,
+
 importance
+
 })
 .select();
 
@@ -57,7 +67,6 @@ return null;
 return data[0];
 
 }
-
 
 
 // ========================
@@ -543,6 +552,8 @@ async function updateMemory(memory){
 const {
 memory_id,
 content,
+keywords=[],
+extraction_terms=[],
 category,
 importance
 }=memory;
@@ -554,8 +565,15 @@ const {data,error}=await supabase
 .update({
 
 content,
+
+keywords,
+
+extraction_terms,
+
 category,
+
 importance,
+
 updated_at:new Date()
 
 })
@@ -584,8 +602,6 @@ return null;
 return data[0];
 
 }
-
-
 
 // ========================
 // 导出
