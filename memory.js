@@ -280,7 +280,12 @@ if(error){
 
 console.error(
 "🧠 extraction_terms搜索失败:",
-error.message
+{
+message: error.message,
+code: error.code,
+details: error.details,
+hint: error.hint
+}
 );
 
 continue;
