@@ -167,22 +167,22 @@ return data[0];
 
 async function searchMemoryByContent(messages){
 
-  const text = messages
-    .map(msg => {
-      if(typeof msg.content === "string"){
-        return msg.content;
-      }
-      return "";
-    })
-    .join(" ");
+const text = messages
+.map(msg => {
+if(typeof msg.content === "string"){
+return msg.content;
+}
+return "";
+})
+.join(" ");
 
 
-  if(!text.trim()){
-    return [];
-  }
+if(!text.trim()){
+return [];
+}
 
 
-  // 提取英文、数字
+// 提取英文、数字
 const englishWords = text
 .replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g," ")
 .split(/\s+/)
@@ -196,89 +196,215 @@ const chineseBlocks = text.match(/[\u4e00-\u9fa5]{2,}/g) || [];
 
 // 中文二字切片
 const chineseWords = chineseBlocks.flatMap(block=>{
-  const arr=[];
 
-  for(let i=0;i<block.length-1;i++){
-    arr.push(
-      block.slice(i,i+2)
-    );
-  }
+const arr=[];
 
-  return arr;
+for(let i=0;i<block.length-1;i++){
+
+arr.push(
+block.slice(i,i+2)
+);
+
+}
+
+return arr;
+
 });
 
 
 const words = [
-  ...englishWords,
-  ...chineseWords
+...englishWords,
+...chineseWords
 ]
 .filter(word=>word.length>=2);
 
-  // 去重
-  const uniqueWords = [
-    ...new Set(words)
-  ];
+
+// 去重
+const uniqueWords = [
+...new Set(words)
+];
 
 
-  let results = [];
+
+let results = [];
 
 
-  for(const word of uniqueWords){
+// ========================
+// extraction_terms 检索
+// ========================
 
-    const { data, error } = await supabase
-      .from("erebus_memory")
-      .select("*")
-      .ilike("content", `%${word}%`)
-      .limit(10);
+for(const word of uniqueWords){
 
 
-    if(error){
-
-      console.error(
-        "🧠 memory content搜索失败:",
-        error.message
-      );
-
-      continue;
-    }
-
-
-    if(data){
-
-      results.push(...data);
-
-    }
-
-  }
+const {data,error}=await supabase
+.from("erebus_memory")
+.select("*")
+.contains(
+"extraction_terms",
+[word]
+)
+.limit(10);
 
 
-  // id去重
-  const uniqueMemory = Array.from(
-    new Map(
-      results.map(memory => [
-        memory.id,
-        memory
-      ])
-    ).values()
-  );
 
+if(error){
 
-  // 优先保留importance高的相关memory
-  uniqueMemory.sort(
-    (a,b)=>
-      (b.importance || 0)
-      -
-      (a.importance || 0)
-  );
+console.error(
+"🧠 memory extraction_terms搜索失败:",
+error.message
+);
 
-
-  return uniqueMemory.slice(
-    0,
-    MEMORY_SEARCH_LIMIT
-  );
+continue;
 
 }
 
+
+if(data){
+
+results.push(...data);
+
+}
+
+}
+
+
+
+// ========================
+// importance top10
+// ========================
+
+const {data:importantMemory,error:importanceError}
+=
+await supabase
+.from("erebus_memory")
+.select("*")
+.order(
+"importance",
+{
+ascending:false
+}
+)
+.limit(10);
+
+
+
+if(importanceError){
+
+console.error(
+"🧠 memory importance搜索失败:",
+importanceError.message
+);
+
+}else{
+
+if(importantMemory){
+
+results.push(...importantMemory);
+
+}
+
+}
+
+
+
+// ========================
+// id去重
+// ========================
+
+const uniqueMemory = Array.from(
+
+new Map(
+
+results.map(memory=>[
+
+memory.id,
+
+memory
+
+])
+
+).values()
+
+);
+
+
+
+// ========================
+// extraction命中数量排序
+// ========================
+
+const scoredMemory = uniqueMemory.map(memory=>{
+
+
+let matchCount=0;
+
+
+if(
+Array.isArray(memory.extraction_terms)
+){
+
+for(const word of uniqueWords){
+
+if(
+memory.extraction_terms.includes(word)
+){
+
+matchCount++;
+
+}
+
+}
+
+}
+
+
+return {
+
+...memory,
+
+matchCount
+
+};
+
+
+});
+
+
+
+// 排序
+scoredMemory.sort((a,b)=>{
+
+
+// 先看命中数量
+if(
+b.matchCount !== a.matchCount
+){
+
+return b.matchCount-a.matchCount;
+
+}
+
+
+// 再看importance
+
+return (
+(b.importance||0)
+-
+(a.importance||0)
+);
+
+
+});
+
+
+
+return scoredMemory.slice(
+0,
+MEMORY_SEARCH_LIMIT
+);
+
+
+}
 // ========================
 // 分析 memory
 // ========================
