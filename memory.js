@@ -258,22 +258,23 @@ let results=[];
 for(const word of uniqueWords){
 
 
+  
 const {
 data,
 error
 }=await supabase
 .from("erebus_memory")
 .select("*")
+.contains(
+"extraction_terms",
+[word]
+);
+  
 console.log(
 "当前搜索词:",
 word,
 typeof word
 );
-.contains(
-"extraction_terms",
-[word]
-);
-
 
 if(error){
 
