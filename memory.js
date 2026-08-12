@@ -258,6 +258,10 @@ let results=[];
 for(const word of uniqueWords){
 
 
+console.log("DEBUG extraction_terms word:", word);
+console.log("DEBUG extraction_terms query:", JSON.stringify([word]));
+console.log("DEBUG extraction_terms query type:", typeof JSON.stringify([word]));
+
   
 const {
 data,
@@ -278,15 +282,12 @@ typeof word
 
 if(error){
 
-console.error(
-"🧠 extraction_terms搜索失败:",
-{
+console.error("🧠 extraction_terms搜索失败详情:", {
 message: error.message,
 code: error.code,
 details: error.details,
 hint: error.hint
-}
-);
+});
 
 continue;
 
