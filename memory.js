@@ -258,6 +258,10 @@ let results=[];
 for(const word of uniqueWords){
 
 
+console.log("DEBUG extraction_terms word:", word);
+console.log("DEBUG extraction_terms query:", JSON.stringify([word]));
+console.log("DEBUG extraction_terms query type:", typeof JSON.stringify([word]));
+
   
 const {
 data,
@@ -267,7 +271,7 @@ error
 .select("*")
 .contains(
 "extraction_terms",
-[word]
+JSON.stringify([word])
 );
   
 console.log(
@@ -278,10 +282,12 @@ typeof word
 
 if(error){
 
-console.error(
-"🧠 extraction_terms搜索失败:",
-error.message
-);
+console.error("🧠 extraction_terms搜索失败详情:", {
+message: error.message,
+code: error.code,
+details: error.details,
+hint: error.hint
+});
 
 continue;
 
@@ -559,8 +565,16 @@ let clean = text
 
 
 
+let parsedMemory;
+
+try{
+
+parsedMemory = JSON.parse(clean);
+
+}catch(e){
+
 const jsonMatch =
-clean.match(/{[\s\S]*?}/);
+clean.match(/\[[\s\S]*\]|{[\s\S]*}/);
 
 
 
@@ -572,19 +586,28 @@ text
 );
 
 
-return {
+return [
+{
 action:"none"
-};
+}
+];
 
 }
 
+parsedMemory = JSON.parse(jsonMatch[0]);
 
+}
 
-const memory =
-JSON.parse(jsonMatch[0]);
+const memoryActions =
+Array.isArray(parsedMemory)
+? parsedMemory
+: [parsedMemory];
+
+for(const memory of memoryActions){
 
 // assistant推测保护
 if(
+memory &&
 memory.action==="add"
 ){
 
@@ -648,13 +671,15 @@ content
 
 }
 
+}
+
 console.log(
 "Erebus memory decision:",
-JSON.stringify(memory,null,2)
+JSON.stringify(memoryActions,null,2)
 );
 
 
-return memory;
+return memoryActions;
 
 
 
