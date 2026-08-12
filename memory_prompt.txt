@@ -356,10 +356,10 @@ keywords:
 "action":"add",
 "content":"",
 "keywords":[],
+"extraction_terms":[],
 "category":"",
 "importance":
 }
-
 
 
 2. update
@@ -370,12 +370,12 @@ update必须输出事实陈述。
 括号只允许用于低可信add记忆。
 
 格式：
-
 {
 "action":"update",
 "memory_id":"",
 "content":"",
 "keywords":[],
+"extraction_terms":[],
 "category":"",
 "importance":
 }
