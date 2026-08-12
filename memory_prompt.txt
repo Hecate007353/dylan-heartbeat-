@@ -209,13 +209,63 @@ importance代表：
 
 不要因为无法分类而丢失用户明确表达的信息。
 
-你需要比较：
+Extraction terms规则：
 
-已有记忆
+Extraction terms为memory内容的提取词，用于快速检索。
 
-和
+Extraction terms不是展示内容，不参与importance判断。
 
-当前聊天
+生成规则：
+
+1. Extraction terms必须来自content中的实际词语。
+
+2. 优先提取：
+- 核心实体
+- 行为
+- 名词
+- 重要动作
+- 专有名词
+
+3. 删除：
+- 用户
+- assistant
+- 喜欢
+- 希望
+- 认为
+- 需要
+- 正在
+- 不
+- 是
+等没有检索价值的通用词。
+
+4. 不添加content不存在的关联词。
+
+5. 每条memory生成3-10个Extraction terms。
+
+例如：
+
+content:
+用户喜欢晚上进行聊天交流和编程工作
+
+Extraction terms:
+[
+"晚上",
+"聊天",
+"交流",
+"编程",
+"工作"
+]
+
+
+content:
+用户希望assistant保持自然聊天方式
+
+Extraction terms:
+[
+"自然",
+"聊天",
+"方式"
+]
 
 keywords规则：
 
@@ -281,6 +331,15 @@ memory2:
 
 keywords:
 ["奶茶","饮品"]
+
+
+你需要比较：
+
+已有记忆
+
+和
+
+当前聊天
 
 你有五种操作：
 
