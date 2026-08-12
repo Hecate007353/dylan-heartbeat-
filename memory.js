@@ -168,8 +168,8 @@ return data[0];
 async function searchMemoryByContent(messages){
 
 const text = messages
-.map(msg => {
-if(typeof msg.content === "string"){
+.map(msg=>{
+if(typeof msg.content==="string"){
 return msg.content;
 }
 return "";
@@ -182,24 +182,37 @@ return [];
 }
 
 
-// 提取英文、数字
+
+// ========================
+// 提取检索词
+// ========================
+
+
+// 英文数字
 const englishWords = text
 .replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g," ")
 .split(/\s+/)
 .filter(Boolean)
-.filter(word => /^[a-zA-Z0-9]+$/.test(word));
+.filter(word=>/^[a-zA-Z0-9]+$/.test(word));
 
 
-// 提取中文连续片段
-const chineseBlocks = text.match(/[\u4e00-\u9fa5]{2,}/g) || [];
+// 中文连续片段
+const chineseBlocks =
+text.match(/[\u4e00-\u9fa5]{2,}/g)
+|| [];
 
 
-// 中文二字切片
-const chineseWords = chineseBlocks.flatMap(block=>{
+// 中文bigram
+const chineseWords =
+chineseBlocks.flatMap(block=>{
 
 const arr=[];
 
-for(let i=0;i<block.length-1;i++){
+for(
+let i=0;
+i<block.length-1;
+i++
+){
 
 arr.push(
 block.slice(i,i+2)
@@ -212,45 +225,55 @@ return arr;
 });
 
 
-const words = [
+
+const words=[
 ...englishWords,
 ...chineseWords
 ]
 .filter(word=>word.length>=2);
 
 
+
 // 去重
-const uniqueWords = [
+const uniqueWords=[
 ...new Set(words)
 ];
 
 
 
-let results = [];
+if(uniqueWords.length===0){
+return [];
+}
+
+
+
+let results=[];
+
 
 
 // ========================
-// extraction_terms 检索
+// extraction_terms检索
 // ========================
 
 for(const word of uniqueWords){
 
 
-const {data,error}=await supabase
+const {
+data,
+error
+}=await supabase
 .from("erebus_memory")
 .select("*")
 .contains(
 "extraction_terms",
 [word]
-)
-.limit(10);
-
+);
 
 
 if(error){
 
 console.error(
-"🧠 memory extraction_terms搜索失败:",
+"🧠 extraction_terms搜索失败:",
 error.message
 );
 
@@ -273,7 +296,10 @@ results.push(...data);
 // importance top10
 // ========================
 
-const {data:importantMemory,error:importanceError}
+const {
+data:importantMemory,
+error:importanceError
+}
 =
 await supabase
 .from("erebus_memory")
@@ -291,17 +317,14 @@ ascending:false
 if(importanceError){
 
 console.error(
-"🧠 memory importance搜索失败:",
+"🧠 importance搜索失败:",
 importanceError.message
 );
 
-}else{
-
-if(importantMemory){
+}
+else if(importantMemory){
 
 results.push(...importantMemory);
-
-}
 
 }
 
@@ -311,29 +334,24 @@ results.push(...importantMemory);
 // id去重
 // ========================
 
-const uniqueMemory = Array.from(
-
+const uniqueMemory =
+Array.from(
 new Map(
-
 results.map(memory=>[
-
 memory.id,
-
 memory
-
 ])
-
 ).values()
-
 );
 
 
 
 // ========================
-// extraction命中数量排序
+// 计算extraction命中数量
 // ========================
 
-const scoredMemory = uniqueMemory.map(memory=>{
+const scoredMemory =
+uniqueMemory.map(memory=>{
 
 
 let matchCount=0;
@@ -342,6 +360,7 @@ let matchCount=0;
 if(
 Array.isArray(memory.extraction_terms)
 ){
+
 
 for(const word of uniqueWords){
 
@@ -358,12 +377,10 @@ matchCount++;
 }
 
 
+
 return {
-
 ...memory,
-
 matchCount
-
 };
 
 
@@ -371,30 +388,14 @@ matchCount
 
 
 
-// 排序
-scoredMemory.sort((a,b)=>{
+// ========================
+// 只按照命中数量排序
+// ========================
 
-
-// 先看命中数量
-if(
-b.matchCount !== a.matchCount
-){
-
-return b.matchCount-a.matchCount;
-
-}
-
-
-// 再看importance
-
-return (
-(b.importance||0)
--
-(a.importance||0)
+scoredMemory.sort(
+(a,b)=>
+b.matchCount-a.matchCount
 );
-
-
-});
 
 
 
@@ -405,6 +406,7 @@ MEMORY_SEARCH_LIMIT
 
 
 }
+
 // ========================
 // 分析 memory
 // ========================
