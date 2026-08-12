@@ -410,6 +410,15 @@ update必须输出事实陈述。
 
 
 特殊规则：
+用户输入存在明显错别字时，根据上下文理解真实含义。
+
+如果用户只是纠正已有表达、错别字、同义词：
+
+优先update已有memory。
+
+不要delete旧memory再add新memory。
+
+级别16-19永远不执行delete,只进行update
 
 用户要求删除/忘记某信息时，
 优先delete。
