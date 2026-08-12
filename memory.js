@@ -267,7 +267,7 @@ error
 .select("*")
 .contains(
 "extraction_terms",
-[word]
+JSON.stringify([word])
 );
   
 console.log(
@@ -559,8 +559,16 @@ let clean = text
 
 
 
+let parsedMemory;
+
+try{
+
+parsedMemory = JSON.parse(clean);
+
+}catch(e){
+
 const jsonMatch =
-clean.match(/{[\s\S]*?}/);
+clean.match(/\[[\s\S]*\]|{[\s\S]*}/);
 
 
 
@@ -572,19 +580,28 @@ text
 );
 
 
-return {
+return [
+{
 action:"none"
-};
+}
+];
 
 }
 
+parsedMemory = JSON.parse(jsonMatch[0]);
 
+}
 
-const memory =
-JSON.parse(jsonMatch[0]);
+const memoryActions =
+Array.isArray(parsedMemory)
+? parsedMemory
+: [parsedMemory];
+
+for(const memory of memoryActions){
 
 // assistant推测保护
 if(
+memory &&
 memory.action==="add"
 ){
 
@@ -648,13 +665,15 @@ content
 
 }
 
+}
+
 console.log(
 "Erebus memory decision:",
-JSON.stringify(memory,null,2)
+JSON.stringify(memoryActions,null,2)
 );
 
 
-return memory;
+return memoryActions;
 
 
 
