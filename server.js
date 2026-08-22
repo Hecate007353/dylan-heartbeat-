@@ -524,57 +524,13 @@ return data.reverse();
 
 
 
-// ========================
-// 读取memory
-// 测试版 importance排序
-// ========================
-
-async function getImportantMemories(limit=30){
-
-const {data,error}=await supabase
-.from("erebus_memory")
-.select("*")
-.order(
-"importance",
-{
-ascending:false
-}
-)
-.order(
-"updated_at",
-{
-ascending:false
-}
-)
-.limit(limit);
-
-
-if(error){
-
-console.error(
-"读取memory失败:",
-error
-);
-
-return [];
-
-}
-
-
-return data;
-
-}
-
-
-
-
 const supabaseMessages =
 await getRecentMessages(20);
 
 
 
 const memories =
-await getImportantMemories(30);
+await getMemories(30);
 
 
 
@@ -687,63 +643,49 @@ try {
   const memoryResult =
     await analyzeMemory(memoryMessages);
 
-// ========================
-// assistant推测保护
-// ========================
+  const memoryResults =
+    Array.isArray(memoryResult)
+    ? memoryResult
+    : [memoryResult];
 
-if(memoryResult){
+  for(const memoryAction of memoryResults){
 
-const userTexts =
-memoryMessages
-.filter(
-msg => msg.role === "user"
-)
-.map(
-msg => String(msg.content)
-)
-.join("\n");
+    if(!memoryAction){
+      continue;
+    }
 
+    // ========================
+    // assistant推测保护
+    // ========================
 
-// 只有add才降低
-// update/delete不要影响
+    if(
+    memoryAction.action === "add"
+    &&
+    typeof memoryAction.content === "string"
+    &&
+    memoryAction.content.startsWith("（Erebus观察")
+    ){
 
-if(
-memoryResult.action === "add"
-&&
-typeof memoryResult.content === "string"
-&&
-memoryResult.content.startsWith("（Erebus观察")
-){
-
-console.log(
-"检测到可能来自assistant推测，降低importance"
-);
+    console.log(
+    "检测到可能来自assistant推测，降低importance"
+    );
 
 
-memoryResult.importance =
-Math.min(
-memoryResult.importance || 3,
-3
-);
+    memoryAction.importance =
+    Math.min(
+    memoryAction.importance || 3,
+    3
+    );
 
-}
-
-}
-
-
-// ========================
-// 原来的处理继续
-// ========================
-
-  if(memoryResult){
+    }
 
 
     // 新增记忆
-    if(memoryResult.action === "add"){
+    if(memoryAction.action === "add"){
 
 
       const result =
-        await addMemory(memoryResult);
+        await addMemory(memoryAction);
 
 
       if(result){
@@ -760,11 +702,11 @@ memoryResult.importance || 3,
 
 
     // 更新记忆
-    else if(memoryResult.action === "update"){
+    else if(memoryAction.action === "update"){
 
 
       const result =
-        await updateMemory(memoryResult);
+        await updateMemory(memoryAction);
 
 
       if(result){
@@ -781,11 +723,11 @@ memoryResult.importance || 3,
 
 
     // 删除记忆
-    else if(memoryResult.action === "delete"){
+    else if(memoryAction.action === "delete"){
 
 
       const result =
-        await deleteMemory(memoryResult);
+        await deleteMemory(memoryAction);
 
 
       if(result){
@@ -802,7 +744,7 @@ memoryResult.importance || 3,
 
 
     // 无操作
-    else if(memoryResult.action === "none"){
+    else if(memoryAction.action === "none"){
 
 
       console.log(
@@ -811,10 +753,7 @@ memoryResult.importance || 3,
 
     }
 
-
   }
-
-
 }catch(err){
 
 
