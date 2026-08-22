@@ -524,57 +524,13 @@ return data.reverse();
 
 
 
-// ========================
-// 读取memory
-// 测试版 importance排序
-// ========================
-
-async function getImportantMemories(limit=30){
-
-const {data,error}=await supabase
-.from("erebus_memory")
-.select("*")
-.order(
-"importance",
-{
-ascending:false
-}
-)
-.order(
-"updated_at",
-{
-ascending:false
-}
-)
-.limit(limit);
-
-
-if(error){
-
-console.error(
-"读取memory失败:",
-error
-);
-
-return [];
-
-}
-
-
-return data;
-
-}
-
-
-
-
 const supabaseMessages =
 await getRecentMessages(20);
 
 
 
 const memories =
-await getImportantMemories(30);
+await getMemories(30);
 
 
 
